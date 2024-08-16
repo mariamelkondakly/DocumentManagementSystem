@@ -1,0 +1,17 @@
+com\AtosReady\DocumentManagementSystem\Mappers\UserMapper.class
+com\AtosReady\DocumentManagementSystem\Exceptions\ShortPasswordException.class
+com\AtosReady\DocumentManagementSystem\Aspects\LoginAspect.class
+com\AtosReady\DocumentManagementSystem\DTO\UserDTO.class
+com\AtosReady\DocumentManagementSystem\Services\UserDetailServices.class
+com\AtosReady\DocumentManagementSystem\Repositories\UserRepo.class
+com\AtosReady\DocumentManagementSystem\DTO\LoginRequest.class
+com\AtosReady\DocumentManagementSystem\Aspects\RegistrationAspect.class
+com\AtosReady\DocumentManagementSystem\Models\User.class
+com\AtosReady\DocumentManagementSystem\Configurations\JwtFilter.class
+com\AtosReady\DocumentManagementSystem\Configurations\SecurityConfig.class
+com\AtosReady\DocumentManagementSystem\Exceptions\UniquenessViolationException.class
+com\AtosReady\DocumentManagementSystem\DocumentManagementSystemApplication.class
+com\AtosReady\DocumentManagementSystem\Controllers\UserController.class
+com\AtosReady\DocumentManagementSystem\Mappers\UserMapperImpl.class
+com\AtosReady\DocumentManagementSystem\Services\JWTService.class
+com\AtosReady\DocumentManagementSystem\Services\UserService.class

@@ -1,0 +1,16 @@
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Aspects\LoginAspect.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Aspects\RegistrationAspect.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Configurations\JwtFilter.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Configurations\SecurityConfig.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Controllers\UserController.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\DocumentManagementSystemApplication.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\DTO\LoginRequest.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\DTO\UserDTO.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Exceptions\ShortPasswordException.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Exceptions\UniquenessViolationException.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Mappers\UserMapper.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Models\User.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Repositories\UserRepo.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Services\JWTService.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Services\UserDetailServices.java
+C:\Users\MARIAM\IdeaProjects\DocumentManagementSystem\Server\src\main\java\com\AtosReady\DocumentManagementSystem\Services\UserService.java
