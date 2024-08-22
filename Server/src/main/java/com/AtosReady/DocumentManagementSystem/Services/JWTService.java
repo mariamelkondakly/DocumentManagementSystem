@@ -7,6 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -19,23 +20,24 @@ import java.util.function.Function;
 
 @Service
 public class JWTService {
-    private String secretKey="";
 
-    public JWTService() throws NoSuchAlgorithmException {
-        KeyGenerator keyGen=KeyGenerator.getInstance("HmacSHA256");
-        SecretKey sk=keyGen.generateKey();
-        secretKey= Base64.getEncoder().encodeToString(sk.getEncoded());
-    }
+    @Value("${app.secret.key}")
+    private String secretKey;
 
-    public String generateToken(String email) {
+    @Value("${jwt.token.expiration}")
+    private long expirationTime;
+
+    Date expiryDate = new Date(new Date().getTime() + expirationTime);
+
+    public String generateToken(String email, long id) {
         Map<String,Object> claims=new HashMap<>();
+        claims.put("id", id); // Add user ID to claims
+        claims.put("email", email);
         return Jwts.builder()
-                .claims()
-                .add(claims)
+                .claims(claims)
                 .subject(email)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()*60*60*600))
-                .and()
+                .expiration(expiryDate)
                 .signWith(getKey())
                 .compact();
 
@@ -59,9 +61,13 @@ public class JWTService {
     }
 
     public String extractEmail(String token) {
-        // extract the username from jwt token
         return extractClaim(token, Claims::getSubject);
     }
+    public Long extractId(String token) {
+        return extractClaim(token, claims -> claims.get("id", Long.class));
+    }
+
+
 
 
     public boolean validateToken(String token, UserDetails userDetails) {

@@ -1,6 +1,6 @@
 package com.AtosReady.DocumentManagementSystem.Aspects;
 
-import com.AtosReady.DocumentManagementSystem.Exceptions.ShortPasswordException;
+import com.AtosReady.DocumentManagementSystem.Exceptions.WeakPasswordException;
 import com.AtosReady.DocumentManagementSystem.Exceptions.UniquenessViolationException;
 import com.AtosReady.DocumentManagementSystem.Models.User;
 import com.AtosReady.DocumentManagementSystem.Repositories.UserRepo;
@@ -23,8 +23,10 @@ public class RegistrationAspect {
 
     @Before("registerUserPointcut(user)")
     public void validateUserBeforeRegistration(User user) {
-        if (user.getPassword().length() < 8) {
-            throw new ShortPasswordException();
+        String passwordPattern = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+
+        if (!user.getPassword().matches(passwordPattern)) {
+            throw new WeakPasswordException("Password must be at least 8 characters long and include uppercase, lowercase, digit, and special character.");
         }
 
         User userCheck = repo.findByEmail(user.getEmail());

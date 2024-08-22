@@ -6,10 +6,13 @@ import com.AtosReady.DocumentManagementSystem.Mappers.UserMapper;
 import com.AtosReady.DocumentManagementSystem.Models.User;
 import com.AtosReady.DocumentManagementSystem.Repositories.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,21 +33,25 @@ public class UserService {
     @Autowired
     private AuthenticationManager authManager;
 
-    private final BCryptPasswordEncoder encoder=new BCryptPasswordEncoder(12);
+    @Bean
+    public PasswordEncoder passwordEncoder()
+    {
+        return new BCryptPasswordEncoder(12);
+    }
 
-    public User register(User user){
-        user.setPassword(encoder.encode(user.getPassword()));
+    public UserDTO register(User user){
+        user.setPassword(passwordEncoder().encode(user.getPassword()));
         repo.save(user);
-        return user;
+        return userMapper.userToUserDTO(user);
     }
 
     public String verify(LoginRequest user){
         Authentication authentication=authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
         if(authentication.isAuthenticated()){
-            return jwtService.generateToken(user.getEmail());
+            return jwtService.generateToken(user.getEmail(), user.getId());
         }
         else{
-            return "Tokenization failed";
+            throw new UsernameNotFoundException("User doesn't exist.");
         }
     }
 

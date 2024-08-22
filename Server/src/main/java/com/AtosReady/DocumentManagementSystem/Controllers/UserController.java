@@ -25,13 +25,13 @@ public class UserController {
     private UserMapper userMapper;
 
     @PostMapping("/register")
-    public UserDTO register(@RequestBody @Valid User user)
+    public UserDTO register( @Valid @RequestBody User user)
     {
-        userService.register(user);
-        return userMapper.userToUserDTO(user);
+        return userService.register(user);
     }
+
     @PostMapping("/login")
-    public String login(@RequestBody @Valid LoginRequest user)
+    public String login(@Valid @RequestBody  LoginRequest user)
     {
         return userService.verify(user);
     }

@@ -35,14 +35,22 @@ public class User implements UserDetails {
     //@Size(min = 8,max = 20)
     private String password;
 
-    @Column(name="personal_info")
-    private String personal_info;
+    @Column(name="first_name", nullable = false)
+    private String first_name;
 
-    public User(String email, long nid, String password, String personalInfo) {
+    @Column(name="last_name", nullable=false)
+    private String last_name;
+
+    @Column(name="age")
+    private int age;
+
+    public User(String email, long nid, String password, String first_name, String last_name, int age) {
         this.email=email;
         this.nid=nid;
         this.password=password;
-        this.personal_info=personalInfo;
+        this.first_name=first_name;
+        this.last_name=last_name;
+        this.age=age;
     }
 
     @Override
@@ -62,7 +70,9 @@ public class User implements UserDetails {
                 ", email='" + email + '\'' +
                 ", nid=" + nid +
                 ", password='" + password + '\'' +
-                ", personal_info='" + personal_info + '\'' +
+                ", first_name='" + first_name + '\'' +
+                ", last_name='" + last_name + '\'' +
+                ", age=" + age +
                 '}';
     }
 }

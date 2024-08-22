@@ -31,21 +31,15 @@ const RegisterComponent = () => {
 
     function handleRegisterationForm(e) {
         e.preventDefault();
-        const register = { nid, email, info, password };
-
+        const register = { email, nid,password, info };
         registerAPICall(register).then((response) => {
             console.log(response.data);
-        }).catch(error => {
-            registerAPICall(register).then((response) => {
-                console.log(response.data);
-            }).catch(error => {
-                console.error("Error response:", error.response);
-                console.error("Error message:", error.message);
-                console.error("Error config:", error.config);
-            });
-            
-        });
+            clearData();
+
+        })
     }
+
+    
 
     const clearData=()=>{
         setEmail({value:"",
@@ -77,7 +71,7 @@ const RegisterComponent = () => {
                         </div>
 
                         <div className='card-body'>
-                            <form onSubmit={clearData}>
+                            <form onSubmit={handleRegisterationForm}>
                                 <div className='row mb-3'>
                                     <label className='col-md-3 control-label' htmlFor='email'>Email</label>
                                     <div className='col-md-9'>
@@ -100,7 +94,7 @@ const RegisterComponent = () => {
                                 </div>
 
                                 <div className='row mb-3'>
-                                    <label className='col-md-3 control-label'>Password</label>
+                                    <label className='col-md-3 control-label' htmlFor='password'>Password</label>
                                     <div className='col-md-9'>
                                         <input
                                             type='password'
