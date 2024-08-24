@@ -7,6 +7,7 @@ export const registerAPICall = (registerObj) => {
         .then(response => {
             console.log("Registration successful:", response.data);
             return response.data;
+            
         })
         .catch(error => {
             if (error.response) {
@@ -29,8 +30,11 @@ export const registerAPICall = (registerObj) => {
 
 export const loginAPICall = (loginObj)=>{
     return axios.post(`${AUTH_REST_API_BASE_URL}/login`, loginObj)
-        .then(response=>{
-            console.log("Login successful", response.data);
+        .then(response => {
+            const token = response.data.token;
+            localStorage.setItem('token', token);
+
+            console.log("Login successful:", response.data);
             return response.data;
         })
         .catch(error=>{
