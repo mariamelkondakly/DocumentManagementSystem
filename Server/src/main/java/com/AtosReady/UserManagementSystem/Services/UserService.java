@@ -41,6 +41,7 @@ public class UserService {
 
     public UserDTO register(User user){
         user.setPassword(passwordEncoder().encode(user.getPassword()));
+        user.getRoles().add("ROLE_USER");
         repo.save(user);
         return userMapper.userToUserDTO(user);
     }
