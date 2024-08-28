@@ -16,4 +16,14 @@ public class UserDTO {
     private String last_name;
     private String age;
 
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                "email='" + email + '\'' +
+                ", nid=" + nid +
+                ", first_name='" + first_name + '\'' +
+                ", last_name='" + last_name + '\'' +
+                ", age='" + age + '\'' +
+                '}';
+    }
 }

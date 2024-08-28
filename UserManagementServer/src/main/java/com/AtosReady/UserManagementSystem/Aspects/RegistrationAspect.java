@@ -1,5 +1,6 @@
 package com.AtosReady.UserManagementSystem.Aspects;
 
+import com.AtosReady.UserManagementSystem.DTO.UserDTO;
 import com.AtosReady.UserManagementSystem.Exceptions.WeakPasswordException;
 import com.AtosReady.UserManagementSystem.Exceptions.UniquenessViolationException;
 import com.AtosReady.UserManagementSystem.Models.User;
@@ -17,7 +18,7 @@ public class RegistrationAspect {
     @Autowired
     private UserRepo repo;
 
-    @Pointcut("execution(* com.AtosReady.DocumentManagementSystem.Services.UserService.register(..)) && args(user)")
+    @Pointcut("execution(* com.AtosReady.UserManagementSystem.Services.UserService.register(..)) && args(user)")
     public void registerUserPointcut(User user) {
     }
 

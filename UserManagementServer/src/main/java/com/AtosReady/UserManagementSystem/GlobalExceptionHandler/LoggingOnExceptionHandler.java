@@ -1,8 +1,5 @@
 package com.AtosReady.UserManagementSystem.GlobalExceptionHandler;
-import com.AtosReady.UserManagementSystem.Exceptions.BadCredentialsException;
-import com.AtosReady.UserManagementSystem.Exceptions.UniquenessViolationException;
-import com.AtosReady.UserManagementSystem.Exceptions.WeakPasswordException;
-import com.AtosReady.UserManagementSystem.Exceptions.UserNotFoundException;
+import com.AtosReady.UserManagementSystem.Exceptions.*;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -47,6 +44,16 @@ public class LoggingOnExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<String> handleConstraintViolation(ConstraintViolationException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body("A database constraint was violated.");
+    }
+
+    @ExceptionHandler(DirectoryCreationException.class)
+    public ResponseEntity<String> DirectoryFailedToCreateHandler(DirectoryCreationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Directory could not be created");
+    }
+
+    @ExceptionHandler(DirectoryExistsException.class)
+    public ResponseEntity<String> DirectoryAlreadyExistsHandler(DirectoryExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body("Directory already exists");
     }
 
 

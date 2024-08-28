@@ -19,22 +19,26 @@ import java.util.function.Function;
 @Service
 public class JWTService {
 
-    @Value("${app.secret.key}")
+    @Value("${jwt.secret.key}")
     private String secretKey;
 
     @Value("${jwt.token.expiration}")
     private long expirationTime;
 
-    Date expiryDate = new Date(new Date().getTime() + expirationTime);
 
-    public String generateToken(String email, long id) {
+
+    public String generateToken(String email, long nid, String firstName) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expirationTime);
+
         Map<String,Object> claims=new HashMap<>();
-        claims.put("id", id); // Add user ID to claims
+        claims.put("nid", nid); // Add user ID to claims
         claims.put("email", email);
+        claims.put("firstName",firstName);
         return Jwts.builder()
                 .claims(claims)
                 .subject(email)
-                .issuedAt(new Date(System.currentTimeMillis()))
+                .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getKey())
                 .compact();
@@ -61,8 +65,9 @@ public class JWTService {
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
-    public Long extractId(String token) {
-        return extractClaim(token, claims -> claims.get("id", Long.class));
+
+    public Long extractNid(String token) {
+        return extractClaim(token, claims -> claims.get("nid", Long.class));
     }
 
 

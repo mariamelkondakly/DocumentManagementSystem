@@ -34,7 +34,6 @@ public class LoginAspect {
         if (!passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
             throw new BadCredentialsException("Incorrect password");
         }
-        user.setId(existingUser.getId());
 
     }
 }
