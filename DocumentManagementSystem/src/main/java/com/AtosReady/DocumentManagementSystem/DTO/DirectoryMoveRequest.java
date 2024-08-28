@@ -10,8 +10,7 @@ import org.bson.types.ObjectId;
 @Getter
 @Setter
 @AllArgsConstructor
-public class DirectoryUpdateRequest {
-    private String name;
+public class DirectoryMoveRequest {
     private ObjectId parentId;
     private boolean isRoot;
     private boolean originalRoot;

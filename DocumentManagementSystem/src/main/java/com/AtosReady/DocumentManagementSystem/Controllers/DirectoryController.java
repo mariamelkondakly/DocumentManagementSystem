@@ -1,7 +1,8 @@
 package com.AtosReady.DocumentManagementSystem.Controllers;
 
 import com.AtosReady.DocumentManagementSystem.DTO.DirectoryDTO;
-import com.AtosReady.DocumentManagementSystem.DTO.DirectoryUpdateRequest;
+import com.AtosReady.DocumentManagementSystem.DTO.DirectoryMoveRequest;
+import com.AtosReady.DocumentManagementSystem.DTO.DirectoryRenameRequest;
 import com.AtosReady.DocumentManagementSystem.Services.DirectoriesService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +40,17 @@ public class DirectoryController {
         return service.getDirsByParentId(parentId, page,size);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateDirectory(@PathVariable("id") ObjectId id,
-                                                  @RequestBody DirectoryUpdateRequest updateRequest) {
-        service.updateDirectory(id, updateRequest);
+    @PutMapping("move/{id}")
+    public ResponseEntity<String> moveDirectory(@PathVariable("id") ObjectId id,
+                                                  @RequestBody DirectoryMoveRequest updateRequest) {
+        service.MoveDirectory(id, updateRequest);
+        return ResponseEntity.ok("Directory updated successfully");
+    }
+
+    @PutMapping("rename/{id}")
+    public ResponseEntity<String> renameDirectory(@PathVariable("id") ObjectId id,
+                                                  @RequestBody DirectoryRenameRequest updateRequest) {
+        service.RenameDirectory(id, updateRequest);
         return ResponseEntity.ok("Directory updated successfully");
     }
 
