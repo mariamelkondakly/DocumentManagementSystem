@@ -23,10 +23,10 @@ public class Workspaces {
     private boolean deleted = false;
 
 
-    public Workspaces(long userId, String name){
-        this.userId=userId;
-        this.name=name;
-        this.dirIds=new HashSet<>();
+    public Workspaces(long userId, String name) {
+        this.userId = userId;
+        this.name = name;
+        this.dirIds = new HashSet<>();
     }
 
 }

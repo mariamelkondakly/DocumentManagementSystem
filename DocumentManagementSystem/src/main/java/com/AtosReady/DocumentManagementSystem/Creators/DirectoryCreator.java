@@ -3,7 +3,6 @@ package com.AtosReady.DocumentManagementSystem.Creators;
 import com.AtosReady.DocumentManagementSystem.Exceptions.*;
 import com.AtosReady.DocumentManagementSystem.Models.Directories;
 import com.AtosReady.DocumentManagementSystem.Models.Workspaces;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -19,29 +18,29 @@ public class DirectoryCreator {
     @Autowired
     private CommonMethods commonMethods;
 
-    public String rootPathSetter(Directories dir,Workspaces workspace){
-        return workspace.getUserId() +"\\"+ workspace.getName()+"\\"+dir.getName();
+    public String rootPathSetter(Directories dir, Workspaces workspace) {
+        return workspace.getUserId() + "\\" + workspace.getName() + "\\" + dir.getName();
     }
 
-    public String pathSetter(Directories dir,Directories parent){
-        return parent.getPath() +"\\"+ dir.getName();
+    public String pathSetter(Directories dir, Directories parent) {
+        return parent.getPath() + "\\" + dir.getName();
     }
 
 
-    public ResponseEntity<HashMap<String,Object>> createDirectory(String Path,boolean present) {
+    public ResponseEntity<HashMap<String, Object>> createDirectory(String Path, boolean present) {
         File dir = Paths.get(commonMethods.baseFolderPath, Path).toFile();
 
-        commonMethods.permanentlyDeleteDirectory(present,dir);
+        commonMethods.permanentlyDeleteDirectory(present, dir);
 
         if (!dir.exists()) {
             boolean created = dir.mkdirs();
             if (created) {
-                HashMap<String,Object>responseMap= new HashMap<>();
-                responseMap.put("Directory created: " , dir.getAbsolutePath());
-                responseMap.put("Find it in path: ", commonMethods.baseFolderPath+"\\"+ Path);
-                return ResponseEntity.ok( responseMap);
+                HashMap<String, Object> responseMap = new HashMap<>();
+                responseMap.put("Directory created: ", dir.getAbsolutePath());
+                responseMap.put("Find it in path: ", commonMethods.baseFolderPath + "\\" + Path);
+                return ResponseEntity.ok(responseMap);
             } else {
-                throw new DirectoryCreationException("Directory could not be created"+dir.getAbsolutePath());
+                throw new DirectoryCreationException("Directory could not be created" + dir.getAbsolutePath());
             }
         } else {
             throw new DirectoryExistsException("Directory already exists: " + dir.getAbsolutePath());
@@ -69,18 +68,18 @@ public class DirectoryCreator {
     }
 
 
-    public void moveDirectory(String oldPath, String newPath, boolean present){
+    public void moveDirectory(String oldPath, String newPath, boolean present) {
         File sourceDir = Paths.get(commonMethods.baseFolderPath, oldPath).toFile();
         File targetDir = Paths.get(commonMethods.baseFolderPath, newPath).toFile();
 
         if (!sourceDir.exists() || !sourceDir.isDirectory()) {
             throw new ResourceNotFoundException("Source directory does not exist: " + sourceDir.getAbsolutePath());
         }
-        if (targetDir.exists()&&present) {
+        if (targetDir.exists() && present) {
             throw new ResourceExistsException("Target directory already exists: " + targetDir.getAbsolutePath());
         }
 
-        commonMethods.permanentlyDeleteDirectory(present,targetDir);
+        commonMethods.permanentlyDeleteDirectory(present, targetDir);
 
         boolean moved = sourceDir.renameTo(targetDir);
         if (!moved) {
@@ -101,9 +100,9 @@ public class DirectoryCreator {
         }
     }
 
-    public void deletePermanently(boolean present, String path){
-        File dir=Paths.get(commonMethods.baseFolderPath,path).toFile();
-        commonMethods.permanentlyDeleteDirectory(present,dir);
+    public void deletePermanently(boolean present, String path) {
+        File dir = Paths.get(commonMethods.baseFolderPath, path).toFile();
+        commonMethods.permanentlyDeleteDirectory(present, dir);
     }
 
 }

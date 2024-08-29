@@ -20,29 +20,30 @@ public class DirectoryController {
     @Autowired
     private DirectoriesService service;
 
-    @PostMapping("/{workspace_id}/root")
+    @PostMapping("/root/{workspace_id}")
     public ResponseEntity<HashMap<String, Object>> createRootDirectory(@PathVariable ObjectId workspace_id,
-                                                                       @RequestBody DirectoryDTO dir){
+                                                                       @RequestBody DirectoryDTO dir) {
 
-        return service.createRootDirectory(workspace_id,dir);
+        return service.createRootDirectory(workspace_id, dir);
     }
+
     @PostMapping("/{parent_id}")
     public ResponseEntity<HashMap<String, Object>> createSubDirectory(@PathVariable ObjectId parent_id,
-                                                                      @RequestBody DirectoryDTO dir){
+                                                                      @RequestBody DirectoryDTO dir) {
 
-        return service.createSubDirectory(parent_id,dir);
+        return service.createSubDirectory(parent_id, dir);
     }
 
     @GetMapping("/{parentId}")
     public Page<DirectoryDTO> getDirectoriesInParents(@PathVariable("parentId") ObjectId parentId,
-                                                         @RequestParam(value = "page", defaultValue = "0") int page,
-                                                         @RequestParam(value = "size", defaultValue = "10") int size){
-        return service.getDirsByParentId(parentId, page,size);
+                                                      @RequestParam(value = "page", defaultValue = "0") int page,
+                                                      @RequestParam(value = "size", defaultValue = "10") int size) {
+        return service.getDirsByParentId(parentId, page, size);
     }
 
     @PutMapping("move/{id}")
     public ResponseEntity<String> moveDirectory(@PathVariable("id") ObjectId id,
-                                                  @RequestBody DirectoryMoveRequest updateRequest) {
+                                                @RequestBody DirectoryMoveRequest updateRequest) {
         service.MoveDirectory(id, updateRequest);
         return ResponseEntity.ok("Directory updated successfully");
     }
@@ -54,11 +55,11 @@ public class DirectoryController {
         return ResponseEntity.ok("Directory updated successfully");
     }
 
-    @GetMapping("/{workspaceId}/root")
+    @GetMapping("root/{workspaceId}")
     public Page<DirectoryDTO> getDirectoriesInWorkspaces(@PathVariable("workspaceId") ObjectId workspaceId,
                                                          @RequestParam(value = "page", defaultValue = "0") int page,
-                                                         @RequestParam(value = "size", defaultValue = "10") int size){
-        return service.getDirsByWorkspaceId(workspaceId, page,size);
+                                                         @RequestParam(value = "size", defaultValue = "10") int size) {
+        return service.getDirsByWorkspaceId(workspaceId, page, size);
     }
 
     //Delete Endpoints
@@ -67,6 +68,7 @@ public class DirectoryController {
         service.deleteWorkspace(id);
         return ResponseEntity.ok("Workspace deleted successfully.");
     }
+
     @DeleteMapping("/deleteDirectory/{id}")
     public ResponseEntity<String> deleteDirectory(@PathVariable("id") ObjectId id) throws IOException {
         service.deleteDirectory(id);

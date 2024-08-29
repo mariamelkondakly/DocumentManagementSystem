@@ -17,22 +17,21 @@ public class JWTUtil {
     private String secretKey;
 
     private SecretKey getKey() {
-        byte[] keyBytes= Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public Claims extractAllClaims(String token){
+    public Claims extractAllClaims(String token) {
 
-        try{
+        try {
             return Jwts.parser()
                     .verifyWith(getKey())
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-        }catch (SignatureException e){
+        } catch (SignatureException e) {
             throw new InvalidSignatureException("Invalid JWT signature");
-        }
-        catch (ExpiredJwtException e) {
+        } catch (ExpiredJwtException e) {
             throw new RuntimeException("JWT token has expired");
         } catch (MalformedJwtException e) {
             throw new RuntimeException("Invalid JWT token");
@@ -43,10 +42,11 @@ public class JWTUtil {
         }
     }
 
-    public Long extractNid(String token){
-        return extractAllClaims(token).get("nid",Long.class);
+    public Long extractNid(String token) {
+        return extractAllClaims(token).get("nid", Long.class);
     }
-    public Long extractFirstName(String token){
-        return extractAllClaims(token).get("firstName",Long.class);
+
+    public Long extractFirstName(String token) {
+        return extractAllClaims(token).get("firstName", Long.class);
     }
 }

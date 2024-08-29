@@ -16,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +31,7 @@ import java.util.Optional;
 public class DirectoriesService {
 
     @Autowired
-    private DirectoriesRepo repo;
+    protected DirectoriesRepo repo;
 
     @Autowired
     private WorkspaceService workspaceService;
@@ -42,21 +44,27 @@ public class DirectoriesService {
 
     //Poster methods
     public ResponseEntity<HashMap<String, Object>> createSubDirectory(ObjectId parentID, DirectoryDTO dir) {
+
         if (repo.findByNameAndParentIdAndDeletedFalse(dir.getName(), parentID).isPresent()) {
-            throw new ResourceExistsException("Directory with this name already exists");
+            throw new ResourceExistsException("Directory with this name already exists. " +
+                    "Exception was thrown before creating the new user in the createSubDirectory Method");
         }
-        Optional<Directories>deletedDirectory=repo.findByNameAndParentIdAndDeletedTrue(dir.getName(),parentID);
+        Directories parent = repo.findById(parentID)
+                .orElseThrow(() -> new ResourceNotFoundException("parent directory doesn't exist." +
+                        "Exception was thrown while trying to get the new parent in the createSubDirectory Method"));
+
+        Optional<Directories> deletedDirectory = repo.findByNameAndParentIdAndDeletedTrue(dir.getName(), parentID);
         deletedDirectory.ifPresent(directory -> repo.delete(directory));
 
-        Directories newDir = new Directories(null, parentID, dir.getName());
-            Directories parent = repo.findById(parentID).orElseThrow(() -> new ResourceNotFoundException("parent directory doesn't exist."));
-            repo.save(newDir);
-            newDir.setPath(directoryCreator.pathSetter(newDir, parent));
-            repo.save(newDir);
-            parent.getChildrenIds().add(newDir.getId());
-            repo.save(parent);
+        Directories newDir = new Directories(workspaceService.getUserId(), null, parentID, dir.getName());
 
-            return directoryCreator.createDirectory(newDir.getPath(),deletedDirectory.isPresent());
+        repo.save(newDir);
+        newDir.setPath(directoryCreator.pathSetter(newDir, parent));
+        repo.save(newDir);
+        parent.getChildrenIds().add(newDir.getId());
+        repo.save(parent);
+
+        return directoryCreator.createDirectory(newDir.getPath(), deletedDirectory.isPresent());
 
     }
 
@@ -67,10 +75,11 @@ public class DirectoriesService {
         }
         Workspaces workspace = workspaceService.repo.findById(workspaceId).
                 orElseThrow(() -> new ResourceNotFoundException("Workspace doesn't exist."));
-        Optional<Directories>deletedDirectory=repo.findByNameAndWorkspaceIdAndDeletedTrue(dir.getName(),workspaceId);
+        Optional<Directories> deletedDirectory = repo.findByNameAndWorkspaceIdAndDeletedTrue(dir.getName(), workspaceId);
         deletedDirectory.ifPresent(directory -> repo.delete(directory));
 
         Directories newDir = new Directories();
+        newDir.setUserId(workspaceService.getUserId());
         newDir.setWorkspaceId(workspaceId);
         newDir.setName(dir.getName());
         repo.save(newDir);
@@ -78,68 +87,68 @@ public class DirectoriesService {
         repo.save(newDir);
         workspace.getDirIds().add(newDir.getId());
         workspaceService.repo.save(workspace);
-        return directoryCreator.createDirectory(newDir.getPath(),deletedDirectory.isPresent());
+        return directoryCreator.createDirectory(newDir.getPath(), deletedDirectory.isPresent());
 
     }
 
     //Getter methods
     public Page<DirectoryDTO> getDirsByParentId(ObjectId parentId, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Directories parent = repo.findByIdAndDeletedFalse(parentId).orElseThrow(() -> new ResourceNotFoundException("Directory doesn't exist"));
+        Directories parent = repo.findByIdAndUserIdAndDeletedFalse(parentId, getUserId()).orElseThrow(() -> new ResourceNotFoundException("Directory doesn't exist"));
         Page<Directories> directories = repo.findAllByParentIdAndDeletedFalse(parentId, pageable);
         parent.setLastAccessedAt(new Date());
         repo.save(parent);
-        return directories.map(directoriesMapper::workspaceWorkspacesDTO);
+        return directories.map(directoriesMapper::directoryToDirectoryDTO);
     }
 
     public Page<DirectoryDTO> getDirsByWorkspaceId(ObjectId workspaceId, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Page<Directories> directories = repo.findAllByWorkspaceIdAndDeletedFalse(workspaceId, pageable);
-        return directories.map(directoriesMapper::workspaceWorkspacesDTO);
+        return directories.map(directoriesMapper::directoryToDirectoryDTO);
     }
 
     //Putter methods
-    public void RenameDirectory(ObjectId id, DirectoryRenameRequest renameRequest){
+    public void RenameDirectory(ObjectId id, DirectoryRenameRequest renameRequest) {
         //get the directory to be updated
-        Directories existingDirectory = repo.findByIdAndDeletedFalse(id).orElseThrow(() -> new ResourceNotFoundException("Directory not found"));
+        Directories existingDirectory = repo.findByIdAndUserIdAndDeletedFalse(id, getUserId()).orElseThrow(() -> new ResourceNotFoundException("Directory not found"));
 
         //get the path before changes
-        String oldPath= existingDirectory.getPath();
+        String oldPath = existingDirectory.getPath();
 
-        if (renameRequest.isRoot()){
-            if(repo.findByNameAndWorkspaceIdAndDeletedFalse(renameRequest.getName(), existingDirectory.getParentId()).isPresent()) {
+        if (renameRequest.isRoot()) {
+            if (repo.findByNameAndWorkspaceIdAndDeletedFalse(renameRequest.getName(), existingDirectory.getParentId()).isPresent()) {
                 throw new ResourceExistsException("Directory with this name already exists");
             }
-            Optional<Directories>deletedDirectory=repo.findByNameAndWorkspaceIdAndDeletedTrue(renameRequest.getName(), existingDirectory.getParentId());
-            if(deletedDirectory.isPresent()) {
+            Optional<Directories> deletedDirectory = repo.findByNameAndWorkspaceIdAndDeletedTrue(renameRequest.getName(), existingDirectory.getParentId());
+            if (deletedDirectory.isPresent()) {
                 directoryCreator.deletePermanently(deletedDirectory.isPresent(), deletedDirectory.map(Directories::getPath).orElse(null));
             }
-        }else {
+        } else {
             if (repo.findByNameAndParentIdAndDeletedFalse(renameRequest.getName(), existingDirectory.getParentId()).isPresent()) {
                 throw new ResourceExistsException("Directory with this name already exists");
             }
-            Optional<Directories>deletedDirectory=repo.findByNameAndParentIdAndDeletedTrue(renameRequest.getName(), existingDirectory.getParentId());
-            if(deletedDirectory.isPresent()) {
+            Optional<Directories> deletedDirectory = repo.findByNameAndParentIdAndDeletedTrue(renameRequest.getName(), existingDirectory.getParentId());
+            if (deletedDirectory.isPresent()) {
                 directoryCreator.deletePermanently(deletedDirectory.isPresent(), deletedDirectory.map(Directories::getPath).orElse(null));
             }
         }
 
-        if(!existingDirectory.getName().equals(renameRequest.getName())){
+        if (!existingDirectory.getName().equals(renameRequest.getName())) {
 
             existingDirectory.setName(renameRequest.getName());
-            if(renameRequest.isRoot()){
+            if (renameRequest.isRoot()) {
                 Workspaces destinationWorkspace = workspaceService.repo.findByIdAndDeletedFalse(existingDirectory.getWorkspaceId())
                         .orElseThrow(() -> new ResourceNotFoundException("Workspace not found"));
-                existingDirectory.setPath(directoryCreator.rootPathSetter(existingDirectory,destinationWorkspace));
-                if(!existingDirectory.getChildrenIds().isEmpty()) {
+                existingDirectory.setPath(directoryCreator.rootPathSetter(existingDirectory, destinationWorkspace));
+                if (!existingDirectory.getChildrenIds().isEmpty()) {
                     recursivelyUpdatePathOfRootChildren((HashSet<ObjectId>) existingDirectory.getChildrenIds(), existingDirectory);
                 }
-            }else{
-                Directories destinationParent = repo.findByIdAndDeletedFalse(existingDirectory.getParentId())
+            } else {
+                Directories destinationParent = repo.findByIdAndUserIdAndDeletedFalse(existingDirectory.getParentId(), getUserId())
                         .orElseThrow(() -> new ResourceNotFoundException("directory not found"));
-                recursivelyUpdateSubPath(existingDirectory,destinationParent);
+                recursivelyUpdateSubPath(existingDirectory, destinationParent);
             }
-            directoryCreator.renameDirectory(oldPath,existingDirectory.getPath());
+            directoryCreator.renameDirectory(oldPath, existingDirectory.getPath());
             repo.save(existingDirectory);
 
         }
@@ -150,12 +159,12 @@ public class DirectoriesService {
         //TODO Validate if directory belong to same user id from token in all methods
 
         //get the directory to be updated
-        Directories existingDirectory = repo.findByIdAndDeletedFalse(id).orElseThrow(
+        Directories existingDirectory = repo.findByIdAndUserIdAndDeletedFalse(id, getUserId()).orElseThrow(
                 () -> new ResourceNotFoundException("Directory not found, exception was raised in the moveDirectory" +
                         " method while extracting existingDirectory"));
 
         //get the path before changes
-        String oldPath= existingDirectory.getPath();
+        String oldPath = existingDirectory.getPath();
 
         //check if the request is about moving the directory
         if (!existingDirectory.getParentId().equals(updateRequest.getParentId())) {
@@ -164,7 +173,7 @@ public class DirectoriesService {
             if (!updateRequest.isOriginalRoot()) {
 
                 //get the source parent
-                Directories sourceParent = repo.findByIdAndDeletedFalse(existingDirectory.getParentId())
+                Directories sourceParent = repo.findByIdAndUserIdAndDeletedFalse(existingDirectory.getParentId(), getUserId())
                         .orElseThrow(() -> new ResourceNotFoundException("Directory not found, exception was raised" +
                                 "in the moveDirectory method while extracting sourceParent directory"));
 
@@ -180,17 +189,18 @@ public class DirectoriesService {
                     // check if a deleted directory exists with the same name,
                     // if so delete it from database,
                     // then move directory and delete it from folder
-                    existingDirectory.setPath(directoryCreator.rootPathSetter(existingDirectory,destinationWorkspace));
-                    if(!existingDirectory.getChildrenIds().isEmpty()) {
+                    existingDirectory.setPath(directoryCreator.rootPathSetter(existingDirectory, destinationWorkspace));
+                    if (!existingDirectory.getChildrenIds().isEmpty()) {
                         recursivelyUpdatePathOfRootChildren((HashSet<ObjectId>) existingDirectory.getChildrenIds(), existingDirectory);
                     }
-                    Optional<Directories> deletedDirectory=repo.findByNameAndWorkspaceIdAndDeletedTrue
-                            (existingDirectory.getName(),destinationWorkspace.getId());
+                    Optional<Directories> deletedDirectory = repo.findByNameAndWorkspaceIdAndDeletedTrue
+                            (existingDirectory.getName(), destinationWorkspace.getId());
 
-                    deletedDirectory.ifPresent(directory ->{
+                    deletedDirectory.ifPresent(directory -> {
                         destinationWorkspace.getDirIds().remove(directory.getId());
-                        repo.delete(directory);});
-                    directoryCreator.moveDirectory(oldPath,existingDirectory.getPath(), deletedDirectory.isPresent());
+                        repo.delete(directory);
+                    });
+                    directoryCreator.moveDirectory(oldPath, existingDirectory.getPath(), deletedDirectory.isPresent());
 
                     //update the ids' list
                     sourceParent.getChildrenIds().remove(id);
@@ -204,17 +214,18 @@ public class DirectoriesService {
                 } else {//the subdirectory is moving from a parent directory to another
 
                     //get destination directory
-                    Directories destinationParent = repo.findByIdAndDeletedFalse(updateRequest.getParentId())
+                    Directories destinationParent = repo.findByIdAndUserIdAndDeletedFalse(updateRequest.getParentId(), getUserId())
                             .orElseThrow(() -> new ResourceNotFoundException("Directory not found, exception was raised" +
                                     "in the moveDirectory method while extracting destinationParent directory"));
 
-                    recursivelyUpdateSubPath(existingDirectory,destinationParent);
-                    Optional<Directories> deletedDirectory=repo.findByNameAndParentIdAndDeletedTrue
-                            (existingDirectory.getName(),destinationParent.getId());
-                    deletedDirectory.ifPresent(directory ->{
+                    recursivelyUpdateSubPath(existingDirectory, destinationParent);
+                    Optional<Directories> deletedDirectory = repo.findByNameAndParentIdAndDeletedTrue
+                            (existingDirectory.getName(), destinationParent.getId());
+                    deletedDirectory.ifPresent(directory -> {
                         destinationParent.getChildrenIds().remove(directory.getId());
-                        repo.delete(directory);});
-                    directoryCreator.moveDirectory(oldPath,existingDirectory.getPath(), deletedDirectory.isPresent());
+                        repo.delete(directory);
+                    });
+                    directoryCreator.moveDirectory(oldPath, existingDirectory.getPath(), deletedDirectory.isPresent());
 
                     sourceParent.getChildrenIds().remove(id);
                     destinationParent.getChildrenIds().add(id);
@@ -234,17 +245,18 @@ public class DirectoriesService {
                     Workspaces destinationWorkspace = workspaceService.repo.
                             findByIdAndDeletedFalse(updateRequest.getParentId())
                             .orElseThrow(() -> new ResourceNotFoundException("Workspace not found, exception was raised" +
-                            "in the moveDirectory method while extracting destinationWorkspace"));
+                                    "in the moveDirectory method while extracting destinationWorkspace"));
 
-                    existingDirectory.setPath(directoryCreator.rootPathSetter(existingDirectory,destinationWorkspace));
-                    if(!existingDirectory.getChildrenIds().isEmpty()) {
+                    existingDirectory.setPath(directoryCreator.rootPathSetter(existingDirectory, destinationWorkspace));
+                    if (!existingDirectory.getChildrenIds().isEmpty()) {
                         recursivelyUpdatePathOfRootChildren((HashSet<ObjectId>) existingDirectory.getChildrenIds(), existingDirectory);
                     }
-                    Optional<Directories> deletedDirectory=repo.findByNameAndWorkspaceIdAndDeletedTrue(existingDirectory.getName(),destinationWorkspace.getId());
-                    deletedDirectory.ifPresent(directory ->{
+                    Optional<Directories> deletedDirectory = repo.findByNameAndWorkspaceIdAndDeletedTrue(existingDirectory.getName(), destinationWorkspace.getId());
+                    deletedDirectory.ifPresent(directory -> {
                         destinationWorkspace.getDirIds().remove(directory.getId());
-                        repo.delete(directory);});
-                    directoryCreator.moveDirectory(oldPath,existingDirectory.getPath(), deletedDirectory.isPresent());
+                        repo.delete(directory);
+                    });
+                    directoryCreator.moveDirectory(oldPath, existingDirectory.getPath(), deletedDirectory.isPresent());
 
                     sourceWorkspace.getDirIds().remove(id);
                     destinationWorkspace.getDirIds().add(id);
@@ -256,15 +268,16 @@ public class DirectoriesService {
                     existingDirectory.setParentId(null);
 
                 } else {
-                    Directories destinationParent = repo.findByIdAndDeletedFalse(updateRequest.getParentId())
+                    Directories destinationParent = repo.findByIdAndUserIdAndDeletedFalse(updateRequest.getParentId(), getUserId())
                             .orElseThrow(() -> new ResourceNotFoundException("Directory not found, exception was raised" +
                                     "in the moveDirectory method while extracting destinationParent"));
-                    recursivelyUpdateSubPath(existingDirectory,destinationParent);
-                    Optional<Directories> deletedDirectory=repo.findByNameAndParentIdAndDeletedTrue(existingDirectory.getName(),destinationParent.getId());
-                    deletedDirectory.ifPresent(directory ->{
+                    recursivelyUpdateSubPath(existingDirectory, destinationParent);
+                    Optional<Directories> deletedDirectory = repo.findByNameAndParentIdAndDeletedTrue(existingDirectory.getName(), destinationParent.getId());
+                    deletedDirectory.ifPresent(directory -> {
                         destinationParent.getChildrenIds().remove(directory.getId());
-                        repo.delete(directory);});
-                    directoryCreator.moveDirectory(oldPath,existingDirectory.getPath(), deletedDirectory.isPresent());
+                        repo.delete(directory);
+                    });
+                    directoryCreator.moveDirectory(oldPath, existingDirectory.getPath(), deletedDirectory.isPresent());
 
                     sourceWorkspace.getDirIds().remove(id);
                     destinationParent.getChildrenIds().add(id);
@@ -276,7 +289,7 @@ public class DirectoriesService {
                     existingDirectory.setWorkspaceId(null);
                 }
 
-           }
+            }
 
         }
         existingDirectory.setLastAccessedAt(new Date());
@@ -285,7 +298,7 @@ public class DirectoriesService {
 
     //Deleting methods
     public void deleteDirectory(ObjectId directoryId) throws IOException {
-        Directories directory = repo.findByIdAndDeletedFalse(directoryId)
+        Directories directory = repo.findByIdAndUserIdAndDeletedFalse(directoryId, getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Directory not found with ID: " + directoryId
                         + "exception was raised in the deleteDirectory method while extracting the directory"));
 
@@ -315,29 +328,35 @@ public class DirectoriesService {
 
     //updating utilities
     @Transactional
-    public void recursivelyUpdateSubPath(Directories existingDirectory,Directories destinationParent){
-        existingDirectory.setPath(directoryCreator.pathSetter(existingDirectory,destinationParent));
+    public void recursivelyUpdateSubPath(Directories existingDirectory, Directories destinationParent) {
+        existingDirectory.setPath(directoryCreator.pathSetter(existingDirectory, destinationParent));
         repo.save(existingDirectory);
-        if(!existingDirectory.getChildrenIds().isEmpty()){
+        if (!existingDirectory.getChildrenIds().isEmpty()) {
             for (ObjectId childId : existingDirectory.getChildrenIds()) {
-                Directories child=repo.findByIdAndDeletedFalse(childId)
+                Directories child = repo.findByIdAndUserIdAndDeletedFalse(childId, getUserId())
                         .orElseThrow(
-                                ()->new ResourceNotFoundException("Directory with id: "+ childId +"was not found." +
+                                () -> new ResourceNotFoundException("Directory with id: " + childId + "was not found." +
                                         " Exception was thrown in recursivelyUpdatePath"));
-                recursivelyUpdateSubPath(child,existingDirectory);
+                recursivelyUpdateSubPath(child, existingDirectory);
             }
         }
     }
-    public void recursivelyUpdatePathOfRootChildren(HashSet<ObjectId> children,Directories destinationParent){
+
+    public void recursivelyUpdatePathOfRootChildren(HashSet<ObjectId> children, Directories destinationParent) {
         for (ObjectId childId : children) {
-            Directories child=repo.findByIdAndDeletedFalse(childId)
+            Directories child = repo.findByIdAndUserIdAndDeletedFalse(childId, getUserId())
                     .orElseThrow(
-                            ()->new ResourceNotFoundException("Directory with id: "+ childId +"was not found." +
+                            () -> new ResourceNotFoundException("Directory with id: " + childId + "was not found." +
                                     " Exception was thrown in recursivelyUpdatePathOfRootChildren"));
-            recursivelyUpdateSubPath(child,destinationParent);
+            recursivelyUpdateSubPath(child, destinationParent);
         }
     }
 
+    public Long getUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (Long) authentication.getPrincipal();
+
+    }
 
 
 }

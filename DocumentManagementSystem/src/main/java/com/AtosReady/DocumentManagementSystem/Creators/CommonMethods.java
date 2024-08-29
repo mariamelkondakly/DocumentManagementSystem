@@ -23,6 +23,7 @@ public class CommonMethods {
         }
         return dir.delete();
     }
+
     protected void hideRecursively(File file) throws IOException {
         if (file.isDirectory()) {
             // Hide the directory itself
@@ -44,8 +45,9 @@ public class CommonMethods {
         Runtime.getRuntime().exec(command);
 
     }
-    public void permanentlyDeleteDirectory(boolean present, File dir){
-        if(present&&dir.exists()){
+
+    public void permanentlyDeleteDirectory(boolean present, File dir) {
+        if (present && dir.exists()) {
             boolean deleted = deleteDirectoryRecursively(dir);
             if (!deleted) {
                 throw new DirectoryDeletionException("Failed to delete the existing directory: " + dir.getAbsolutePath());

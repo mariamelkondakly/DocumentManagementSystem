@@ -2,7 +2,6 @@ package com.AtosReady.DocumentManagementSystem.Controllers;
 
 import com.AtosReady.DocumentManagementSystem.DTO.WorkspacesDTO;
 import com.AtosReady.DocumentManagementSystem.Services.WorkspaceService;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +17,7 @@ public class WorkspaceController {
     private WorkspaceService workspaceService;
 
     @PostMapping
-    public ResponseEntity<HashMap<String, Object>> AddWorkspace(@RequestBody WorkspacesDTO dto){
+    public ResponseEntity<HashMap<String, Object>> AddWorkspace(@RequestBody WorkspacesDTO dto) {
         return workspaceService.createNewWorkspace(workspaceService.getUserId(), dto.getName());
     }
 

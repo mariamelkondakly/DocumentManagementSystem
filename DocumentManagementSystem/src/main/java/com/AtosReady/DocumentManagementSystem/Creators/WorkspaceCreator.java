@@ -18,21 +18,20 @@ public class WorkspaceCreator {
     private CommonMethods commonMethods;
 
 
-
-    public ResponseEntity<HashMap<String,Object>> createWorkspaceDirectory(String userId, WorkspacesDTO workspace, boolean present) {
+    public ResponseEntity<HashMap<String, Object>> createWorkspaceDirectory(String userId, WorkspacesDTO workspace, boolean present) {
         File dir = Paths.get(commonMethods.baseFolderPath, userId, workspace.getName()).toFile();
 
-        commonMethods.permanentlyDeleteDirectory(present,dir);
+        commonMethods.permanentlyDeleteDirectory(present, dir);
 
         if (!dir.exists()) {
             boolean created = dir.mkdirs();
             if (created) {
-                HashMap<String,Object>responseMap= new HashMap<>();
-                responseMap.put("Directory created: " , dir.getAbsolutePath());
-                responseMap.put("Workspace created: ",workspace.toString());
-                return ResponseEntity.ok( responseMap);
+                HashMap<String, Object> responseMap = new HashMap<>();
+                responseMap.put("Directory created: ", dir.getAbsolutePath());
+                responseMap.put("Workspace created: ", workspace.toString());
+                return ResponseEntity.ok(responseMap);
             } else {
-                throw new DirectoryCreationException("Directory could not be created"+dir.getAbsolutePath());
+                throw new DirectoryCreationException("Directory could not be created" + dir.getAbsolutePath());
             }
         } else {
             throw new DirectoryExistsException("Directory already exists: " + dir.getAbsolutePath());

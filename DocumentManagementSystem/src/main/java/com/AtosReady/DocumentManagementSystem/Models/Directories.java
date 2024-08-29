@@ -6,8 +6,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -19,17 +19,19 @@ import java.util.Set;
 public class Directories {
     @Id
     private ObjectId id;
+    private Long userId;
     private ObjectId workspaceId;
     private ObjectId parentId;
     private String name;
     private Date createdAt;
-    private Set<ObjectId> childrenIds=new HashSet<>();
+    private Set<ObjectId> childrenIds = new HashSet<>();
     private Date lastAccessedAt;
     private String path;
+    private HashMap<String, Documents> documents = new HashMap<>();
     private boolean deleted = false;
 
 
-    public Directories(ObjectId workspace_id, ObjectId parent_id, String name) {
+    public Directories(Long userId, ObjectId workspace_id, ObjectId parent_id, String name) {
         this.createdAt = new Date();
         this.lastAccessedAt = new Date();
         this.workspaceId = workspace_id;

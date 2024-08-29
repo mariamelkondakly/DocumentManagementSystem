@@ -1,24 +1,28 @@
 package com.AtosReady.DocumentManagementSystem.Models;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Document(collection = "documents")
 public class Documents {
-    @Id
     private ObjectId id;
-    private ObjectId dirId;
     private String name;
     private String path;
-    private Date  createdAt;
+    private long size;
+    private boolean Deleted = false;
+    private Date createdAt;
+
+    public Documents() {
+        createdAt = new Date();
+        id = new ObjectId();
+    }
 }
 

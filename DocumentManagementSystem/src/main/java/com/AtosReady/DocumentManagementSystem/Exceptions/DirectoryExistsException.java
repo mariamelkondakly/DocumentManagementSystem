@@ -6,7 +6,8 @@ public class DirectoryExistsException extends RuntimeException {
     public DirectoryExistsException(String message) {
         super(message);
     }
-    public HttpStatus getHttpStatus(){
+
+    public HttpStatus getHttpStatus() {
         return HttpStatus.CONFLICT;
     }
 }

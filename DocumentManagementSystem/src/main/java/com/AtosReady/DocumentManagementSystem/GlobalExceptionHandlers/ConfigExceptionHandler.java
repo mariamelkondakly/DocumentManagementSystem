@@ -13,13 +13,14 @@ import java.io.IOException;
 public class ConfigExceptionHandler {
 
     @ExceptionHandler(InvalidSignatureException.class)
-    public ResponseEntity<ErrorDetails> InvalidJwtHandler(InvalidSignatureException ex, WebRequest request){
-        ErrorDetails details=new ErrorDetails(ex.getMessage(), request.getDescription(false));
-        return new ResponseEntity<>(details,ex.getStatusCode());
+    public ResponseEntity<ErrorDetails> InvalidJwtHandler(InvalidSignatureException ex, WebRequest request) {
+        ErrorDetails details = new ErrorDetails(ex.getMessage(), request.getDescription(false));
+        return new ResponseEntity<>(details, ex.getStatusCode());
     }
+
     @ExceptionHandler(IOException.class)
-    public ResponseEntity<ErrorDetails>commandErrorHandler(IOException ex,WebRequest request){
-        ErrorDetails details=new ErrorDetails(ex.getMessage(), request.getDescription(false));
+    public ResponseEntity<ErrorDetails> commandErrorHandler(IOException ex, WebRequest request) {
+        ErrorDetails details = new ErrorDetails(ex.getMessage(), request.getDescription(false));
         return new ResponseEntity<>(details, HttpStatus.EXPECTATION_FAILED);
     }
 }

@@ -2,8 +2,8 @@ package com.AtosReady.DocumentManagementSystem.Services;
 
 import com.AtosReady.DocumentManagementSystem.Creators.WorkspaceCreator;
 import com.AtosReady.DocumentManagementSystem.DTO.WorkspacesDTO;
-import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceNotFoundException;
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceExistsException;
+import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceNotFoundException;
 import com.AtosReady.DocumentManagementSystem.Mappers.WorkspacesMapper;
 import com.AtosReady.DocumentManagementSystem.Models.Workspaces;
 import com.AtosReady.DocumentManagementSystem.Repositories.WorkspaceRepo;
@@ -36,8 +36,9 @@ public class WorkspaceService {
     public boolean doesWorkspaceExist(ObjectId id) {
         return repo.findByIdAndDeletedFalse(id).isPresent();
     }
-    public boolean doesWorkspaceNameExist(Long userId,String name) {
-        return repo.findByUserIdAndNameAndDeletedFalse(userId,name).isPresent();
+
+    public boolean doesWorkspaceNameExist(Long userId, String name) {
+        return repo.findByUserIdAndNameAndDeletedFalse(userId, name).isPresent();
     }
 
     public Workspaces getWorkspace(ObjectId id) {
@@ -48,7 +49,7 @@ public class WorkspaceService {
     //CRUD supporting methods
 
     public ResponseEntity<HashMap<String, Object>> createNewWorkspace(long userId, String name) {
-        if(doesWorkspaceNameExist(userId,name)){
+        if (doesWorkspaceNameExist(userId, name)) {
             throw new ResourceExistsException("workspace already exists");
         }
         Optional<Workspaces> deletedWorkspace = repo.findByUserIdAndNameAndDeletedTrue(userId, name);
@@ -64,14 +65,14 @@ public class WorkspaceService {
 
     public Page<WorkspacesDTO> getWorkspacesByUserId(long userId, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Workspaces> workspaces=repo.findAllByUserIdAndDeletedFalse(userId, pageable);
+        Page<Workspaces> workspaces = repo.findAllByUserIdAndDeletedFalse(userId, pageable);
 
         return workspaces.map(workspacesMapper::workspaceWorkspacesDTO);
     }
 
 
     //Getting the user's id from the token
-    public Long getUserId(){
+    public Long getUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (Long) authentication.getPrincipal();
 

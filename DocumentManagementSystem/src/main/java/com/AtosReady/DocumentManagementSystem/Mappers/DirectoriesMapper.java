@@ -7,6 +7,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface DirectoriesMapper {
-    DirectoryDTO workspaceWorkspacesDTO(Directories workspace);
-    Directories workspacesDTOToWorkspaces(DirectoryDTO workspace);
+    DirectoryDTO directoryToDirectoryDTO(Directories directory);
+
+    Directories directoryDTOToDirectory(DirectoryDTO directory);
 }

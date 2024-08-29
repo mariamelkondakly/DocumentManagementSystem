@@ -6,7 +6,8 @@ public class ResourceExistsException extends RuntimeException {
     public ResourceExistsException(String message) {
         super(message);
     }
-    public HttpStatus getStatusCode(){
+
+    public HttpStatus getStatusCode() {
         return HttpStatus.CONFLICT;
     }
 

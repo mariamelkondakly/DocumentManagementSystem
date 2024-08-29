@@ -7,5 +7,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface WorkspacesMapper {
     WorkspacesDTO workspaceWorkspacesDTO(Workspaces workspace);
+
     Workspaces workspacesDTOToWorkspaces(WorkspacesDTO workspace);
 }
