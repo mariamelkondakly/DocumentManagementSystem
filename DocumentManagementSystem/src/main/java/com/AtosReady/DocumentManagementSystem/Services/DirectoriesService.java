@@ -8,6 +8,7 @@ import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceExistsException
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceNotFoundException;
 import com.AtosReady.DocumentManagementSystem.Mappers.DirectoriesMapper;
 import com.AtosReady.DocumentManagementSystem.Models.Directories;
+import com.AtosReady.DocumentManagementSystem.Models.Documents;
 import com.AtosReady.DocumentManagementSystem.Models.Workspaces;
 import com.AtosReady.DocumentManagementSystem.Repositories.DirectoriesRepo;
 import org.bson.types.ObjectId;
@@ -22,10 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class DirectoriesService {
@@ -303,13 +301,20 @@ public class DirectoriesService {
                         + "exception was raised in the deleteDirectory method while extracting the directory"));
 
         directory.setDeleted(true);
-        repo.save(directory);
+
         directoryCreator.hideDirectory(directory.getPath());
         if (directory.getChildrenIds() != null) {
             for (ObjectId childId : directory.getChildrenIds()) {
                 deleteDirectory(childId);
             }
         }
+        if(!directory.getDocuments().isEmpty()){
+            for (Map.Entry<String, Documents> entry : directory.getDocuments().entrySet()) {
+                Documents document = entry.getValue();
+                document.setDeleted(true);
+            }
+        }
+        repo.save(directory);
     }
 
     public void deleteWorkspace(ObjectId id) throws IOException {

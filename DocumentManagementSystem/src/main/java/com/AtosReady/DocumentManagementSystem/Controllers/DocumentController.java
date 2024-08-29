@@ -1,5 +1,6 @@
 package com.AtosReady.DocumentManagementSystem.Controllers;
 
+import com.AtosReady.DocumentManagementSystem.DTO.DocumentMoveRequest;
 import com.AtosReady.DocumentManagementSystem.Services.DocumentService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,4 +29,15 @@ public class DocumentController {
                                                  @RequestParam("newName") String newName) throws IOException {
         return service.renameDocument(parentId, oldName, newName);
     }
+
+    @PutMapping("move")
+    public ResponseEntity<String> moveDocument(@RequestBody DocumentMoveRequest documentMoveRequest) throws IOException {
+        return service.moveDocument(documentMoveRequest);
+    }
+
+    @DeleteMapping("{parentId}/{name}")
+    public ResponseEntity<String> deleteDocument(@PathVariable("parentId") ObjectId parentId,@PathVariable("name") String name) throws IOException {
+        return service.deleteDocument(parentId,name);
+    }
+
 }

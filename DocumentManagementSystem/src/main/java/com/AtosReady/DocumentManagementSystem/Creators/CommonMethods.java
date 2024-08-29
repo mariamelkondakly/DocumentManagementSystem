@@ -2,10 +2,14 @@ package com.AtosReady.DocumentManagementSystem.Creators;
 
 import com.AtosReady.DocumentManagementSystem.Exceptions.DirectoryDeletionException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.DosFileAttributeView;
 import java.util.Objects;
 
 @Component
@@ -27,7 +31,7 @@ public class CommonMethods {
     protected void hideRecursively(File file) throws IOException {
         if (file.isDirectory()) {
             // Hide the directory itself
-            setHiddenAttribute(file);
+            hideFile(file.getAbsolutePath());
 
             // Recursively hide all subdirectories and files
             for (File child : Objects.requireNonNull(file.listFiles())) {
@@ -35,16 +39,25 @@ public class CommonMethods {
             }
         } else {
             // Hide the file
-            setHiddenAttribute(file);
+            hideFile(file.getAbsolutePath());
         }
     }
 
-    protected void setHiddenAttribute(File file) throws IOException {
+    public void hideFile(String filePath) throws IOException {
+        Path path = new File(filePath).toPath();
 
-        String command = "attrib +h \"" + file.getAbsolutePath() + "\"";
-        Runtime.getRuntime().exec(command);
+        if (!Files.exists(path)) {
+            throw new IOException("File not found: " + filePath);
+        }
 
+        // Set the hidden attribute
+        DosFileAttributeView attr = Files.getFileAttributeView(path, DosFileAttributeView.class);
+        if (attr == null) {
+            throw new IOException("DOS file attribute view not supported on this file system.");
+        }
+        attr.setHidden(true);
     }
+
 
     public void permanentlyDeleteDirectory(boolean present, File dir) {
         if (present && dir.exists()) {

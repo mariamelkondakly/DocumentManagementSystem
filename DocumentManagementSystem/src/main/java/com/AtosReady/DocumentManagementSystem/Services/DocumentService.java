@@ -1,6 +1,7 @@
 package com.AtosReady.DocumentManagementSystem.Services;
 
 import com.AtosReady.DocumentManagementSystem.Creators.DocumentCreator;
+import com.AtosReady.DocumentManagementSystem.DTO.DocumentMoveRequest;
 import com.AtosReady.DocumentManagementSystem.Exceptions.EmptyFileException;
 import com.AtosReady.DocumentManagementSystem.Exceptions.InvalidSignatureException;
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceExistsException;
@@ -96,6 +97,10 @@ public class DocumentService {
             }
 
             Documents documents = parentDirectory.getDocuments().get(sanitizedOldName);
+            if(documents.isDeleted()){
+                throw new ResourceNotFoundException("file was not found in the directory. Exception was raised in the " +
+                        "renameDocument method in the DocumentService class");
+            }
 
             if (getFileExtension(sanitizedOldName).equals(getFileExtension(sanitizedNewName))) {
                 documents.setName(sanitizedNewName);
@@ -125,5 +130,72 @@ public class DocumentService {
             return "";
         else
             return fileName.substring(Index + 1);
+    }
+
+    public ResponseEntity<String> moveDocument(DocumentMoveRequest documentMoveRequest) throws IOException {
+
+        Directories oldParentDirectory = directoriesService
+                .repo.findByIdAndUserIdAndDeletedFalse(documentMoveRequest.getOldParentId(), directoriesService.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("The directory where the file supposedly is cannot be found," +
+                        " exception was thrown in the moveDocument method in the DocumentService class"));
+
+        Directories newParentDirectory = directoriesService
+                .repo.findByIdAndUserIdAndDeletedFalse(documentMoveRequest.getNewParentId(), directoriesService.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("The directory where the file should be moved cannot be found," +
+                        " exception was thrown in the moveDocument method in the DocumentService class"));
+
+        String sanitizedName = Objects.requireNonNull(documentMoveRequest.getFileName()).replace(".", "_");
+
+        if (!oldParentDirectory.getDocuments().containsKey(sanitizedName)) {
+            throw new ResourceNotFoundException("Couldn't find the file to be moved" +
+                    " exception was thrown in the moveDocument method in the DocumentService class");
+        }
+
+        boolean deletedPresent=false;
+
+        if(newParentDirectory.getDocuments().containsKey(sanitizedName)){
+            Documents deletedDocument=newParentDirectory.getDocuments().get(sanitizedName);
+            if(deletedDocument.isDeleted()){
+                deletedPresent=true;
+                newParentDirectory.getDocuments().remove(deletedDocument.getName());
+            }
+            else{
+                throw new ResourceExistsException("A file with the same name already exists in the destination folder" +
+                        " exception was thrown in the moveDocument method in the DocumentService class");
+            }
+        }
+        Documents document=oldParentDirectory.getDocuments().get(sanitizedName);
+        if(document.isDeleted()){
+            throw new ResourceNotFoundException("Couldn't find the file to be moved" +
+                    " exception was thrown in the moveDocument method in the DocumentService class");
+        }
+        document.setPath(newParentDirectory.getPath()+"\\"+document.getName());
+        oldParentDirectory.getDocuments().remove(document.getName());
+        newParentDirectory.getDocuments().put(document.getName(), document);
+
+        return creator.moveFile(deletedPresent,oldParentDirectory.getPath()+"\\"+documentMoveRequest.getFileName(),
+                newParentDirectory.getPath()+"\\"+documentMoveRequest.getFileName());
+
+    }
+
+    public ResponseEntity<String> deleteDocument(ObjectId parentId, String name) throws IOException {
+        Directories parentDirectory=
+                directoriesService.repo.findByIdAndUserIdAndDeletedFalse(parentId, directoriesService.getUserId())
+                        .orElseThrow(()->new ResourceNotFoundException("Parent directory not found" +
+                                "exception was thrown in the deleteDocument method in the DocumentService class"));
+
+        String sanitizedName = Objects.requireNonNull(name).replace(".", "_");
+
+        if (!parentDirectory.getDocuments().containsKey(sanitizedName)){
+            throw new ResourceNotFoundException("document not found" +
+                    "exception was thrown in the deleteDocument method in the DocumentService class");
+        }
+        Documents document=parentDirectory.getDocuments().get(sanitizedName);
+        if(document.isDeleted()){
+            throw new ResourceNotFoundException("document not found" +
+                    "exception was thrown in the deleteDocument method in the DocumentService class");
+        }
+        document.setDeleted(true);
+        return creator.deleteDocument(parentDirectory.getPath()+"\\"+name);
     }
 }

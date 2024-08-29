@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @Component
@@ -42,5 +43,24 @@ public class DocumentCreator {
             throw new IOException("Failed to rename file");
         }
         return ResponseEntity.ok("File successfully renamed to: " + newPath);
+    }
+
+    public ResponseEntity<String> moveFile(boolean deletedPresent, String oldPath, String newPath) throws IOException {
+        File currentFile = new File(commonMethods.baseFolderPath+"\\"+oldPath);
+        File newDestination = new File(commonMethods.baseFolderPath+"\\"+newPath);
+
+        if (deletedPresent) {
+            commonMethods.permanentlyDeleteDirectory(true, newDestination);
+        }
+
+        Files.move(currentFile.toPath(), newDestination.toPath());
+
+
+        return ResponseEntity.ok("File successfully moved to: " + newPath);
+    }
+
+    public ResponseEntity<String> deleteDocument(String path) throws IOException {
+        commonMethods.hideFile(path);
+        return ResponseEntity.ok("file successfully deleted");
     }
 }
