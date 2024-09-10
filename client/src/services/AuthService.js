@@ -3,6 +3,7 @@ import axios from "axios";
 const AUTH_REST_API_BASE_URL = "http://localhost:8080";
 
 export const registerAPICall = (registerObj) => {
+    console.log(registerObj);
     return axios.post(`${AUTH_REST_API_BASE_URL}/register`, registerObj)
         .then(response => {
             console.log("Registration successful:", response.data);
@@ -29,6 +30,8 @@ export const registerAPICall = (registerObj) => {
 
 
 export const loginAPICall = (loginObj)=>{
+    console.log(loginObj);
+
     return axios.post(`${AUTH_REST_API_BASE_URL}/login`, loginObj)
         .then(response => {
             const token = response.data.token;

@@ -8,9 +8,9 @@ import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceExistsException
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceNotFoundException;
 import com.AtosReady.DocumentManagementSystem.Models.Directories;
 import com.AtosReady.DocumentManagementSystem.Models.Documents;
-import com.AtosReady.DocumentManagementSystem.Repositories.DocumentRepo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,9 +21,6 @@ import java.util.Objects;
 
 @Service
 public class DocumentService {
-
-    @Autowired
-    private DocumentRepo repo;
 
     @Autowired
     private DirectoriesService directoriesService;
@@ -197,5 +194,16 @@ public class DocumentService {
         }
         document.setDeleted(true);
         return creator.deleteDocument(parentDirectory.getPath()+"\\"+name);
+    }
+
+    public ResponseEntity<Resource> previewAndDownloadDocument(ObjectId parentId, String name,String headerType) throws IOException {
+        Directories parentDir = directoriesService.repo.findByIdAndUserIdAndDeletedFalse(parentId, directoriesService.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Parent directory not found." +
+                        "exception was thrown in the previewDocument method"));
+        if(!parentDir.getDocuments().containsKey(name)){
+            throw new ResourceNotFoundException("document not found");
+        }
+        Documents doc=parentDir.getDocuments().get(name);
+        return creator.previewAndDownloadDocument(headerType,doc);
     }
 }

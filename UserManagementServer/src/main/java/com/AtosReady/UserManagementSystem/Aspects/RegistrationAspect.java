@@ -20,6 +20,8 @@ public class RegistrationAspect {
 
     @Pointcut("execution(* com.AtosReady.UserManagementSystem.Services.UserService.register(..)) && args(user)")
     public void registerUserPointcut(User user) {
+        System.out.println(user);
+
     }
 
     @Before("registerUserPointcut(user)")

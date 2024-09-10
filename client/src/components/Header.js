@@ -6,20 +6,12 @@ const HeaderComponent=()=>{
     return(
         <div>
             <header>
-                <nav className='navbar navbar-expand-md navbar-dark bg-dark'>
+                <nav className=''>
                 <div>
                 <a href='http://localhost:3000' className='navbar-brand'>Document Management Application</a>                
                 </div>
-                <div className='collapse navbar-collapse'>
-                    <ul className='navbar-nav'>
-                            <li className='nav-item'>
-                            <NavLink to="/todos" className="nav-link">Todos</NavLink>
-                        </li>
-                    </ul>
-
-                </div>
-                <ul className='navbar-nav'>
-                        <li className='nav-item'>
+                <ul className=''>
+                        <li className='nav-item '>
                         <NavLink to="/register" className="nav-link">Register</NavLink>
                     </li>
                         <li className='nav-item'>

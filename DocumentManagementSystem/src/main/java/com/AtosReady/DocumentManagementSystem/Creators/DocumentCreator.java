@@ -1,14 +1,21 @@
 package com.AtosReady.DocumentManagementSystem.Creators;
 
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceNotFoundException;
+import com.AtosReady.DocumentManagementSystem.Models.Documents;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Component
@@ -62,5 +69,18 @@ public class DocumentCreator {
     public ResponseEntity<String> deleteDocument(String path) throws IOException {
         commonMethods.hideFile(path);
         return ResponseEntity.ok("file successfully deleted");
+    }
+
+
+    public ResponseEntity<Resource> previewAndDownloadDocument(String headerType, Documents doc) throws IOException {
+        Path filePath=Paths.get(commonMethods.baseFolderPath, doc.getPath());
+        Resource resource= new UrlResource(filePath.toUri());
+        if (!resource.exists()) {
+            throw new ResourceNotFoundException("File not found on server: " + filePath);
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, headerType+"; filename=\"" + doc.getName() + "\"")
+                .contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
+                .body(resource);
     }
 }

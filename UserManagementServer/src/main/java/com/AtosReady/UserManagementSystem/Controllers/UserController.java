@@ -24,8 +24,9 @@ public class UserController {
     private UserMapper userMapper;
 
     @PostMapping("/register")
-    public ResponseEntity<HashMap<String, Object>> register(@Valid @RequestBody User user)
+    public ResponseEntity<HashMap<String, Object>> register(@RequestBody User user)
     {
+        System.out.println(user);
         return userService.register(user);
     }
 

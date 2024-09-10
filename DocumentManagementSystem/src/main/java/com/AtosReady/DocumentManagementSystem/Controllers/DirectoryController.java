@@ -20,6 +20,7 @@ public class DirectoryController {
     @Autowired
     private DirectoriesService service;
 
+    //Post Endpoints
     @PostMapping("/root/{workspace_id}")
     public ResponseEntity<HashMap<String, Object>> createRootDirectory(@PathVariable ObjectId workspace_id,
                                                                        @RequestBody DirectoryDTO dir) {
@@ -34,6 +35,7 @@ public class DirectoryController {
         return service.createSubDirectory(parent_id, dir);
     }
 
+    //Get Endpoints
     @GetMapping("/{parentId}")
     public Page<DirectoryDTO> getDirectoriesInParents(@PathVariable("parentId") ObjectId parentId,
                                                       @RequestParam(value = "page", defaultValue = "0") int page,
@@ -41,26 +43,28 @@ public class DirectoryController {
         return service.getDirsByParentId(parentId, page, size);
     }
 
-    @PutMapping("move/{id}")
+    @GetMapping("/root/{workspaceId}")
+    public Page<DirectoryDTO> getDirectoriesInWorkspaces(@PathVariable("workspaceId") ObjectId workspaceId,
+                                                         @RequestParam(value = "page", defaultValue = "0") int page,
+                                                         @RequestParam(value = "size", defaultValue = "10") int size) {
+        return service.getDirsByWorkspaceId(workspaceId, page, size);
+    }
+
+    //Put Endpoints
+    @PutMapping("/move/{id}")
     public ResponseEntity<String> moveDirectory(@PathVariable("id") ObjectId id,
                                                 @RequestBody DirectoryMoveRequest updateRequest) {
         service.MoveDirectory(id, updateRequest);
         return ResponseEntity.ok("Directory updated successfully");
     }
 
-    @PutMapping("rename/{id}")
+    @PutMapping("/rename/{id}")
     public ResponseEntity<String> renameDirectory(@PathVariable("id") ObjectId id,
                                                   @RequestBody DirectoryRenameRequest updateRequest) {
         service.RenameDirectory(id, updateRequest);
         return ResponseEntity.ok("Directory updated successfully");
     }
 
-    @GetMapping("root/{workspaceId}")
-    public Page<DirectoryDTO> getDirectoriesInWorkspaces(@PathVariable("workspaceId") ObjectId workspaceId,
-                                                         @RequestParam(value = "page", defaultValue = "0") int page,
-                                                         @RequestParam(value = "size", defaultValue = "10") int size) {
-        return service.getDirsByWorkspaceId(workspaceId, page, size);
-    }
 
     //Delete Endpoints
     @DeleteMapping("/deleteWorkspace/{id}")

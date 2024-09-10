@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.*;
 
+
+
 @Service
 public class DirectoriesService {
 
@@ -92,7 +94,8 @@ public class DirectoriesService {
     //Getter methods
     public Page<DirectoryDTO> getDirsByParentId(ObjectId parentId, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Directories parent = repo.findByIdAndUserIdAndDeletedFalse(parentId, getUserId()).orElseThrow(() -> new ResourceNotFoundException("Directory doesn't exist"));
+        Directories parent = repo.findByIdAndUserIdAndDeletedFalse(parentId, getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Directory doesn't exist"));
         Page<Directories> directories = repo.findAllByParentIdAndDeletedFalse(parentId, pageable);
         parent.setLastAccessedAt(new Date());
         repo.save(parent);
@@ -114,12 +117,15 @@ public class DirectoriesService {
         String oldPath = existingDirectory.getPath();
 
         if (renameRequest.isRoot()) {
-            if (repo.findByNameAndWorkspaceIdAndDeletedFalse(renameRequest.getName(), existingDirectory.getParentId()).isPresent()) {
+            if (repo.findByNameAndWorkspaceIdAndDeletedFalse(renameRequest.getName(),
+                    existingDirectory.getParentId()).isPresent()) {
                 throw new ResourceExistsException("Directory with this name already exists");
             }
-            Optional<Directories> deletedDirectory = repo.findByNameAndWorkspaceIdAndDeletedTrue(renameRequest.getName(), existingDirectory.getParentId());
+            Optional<Directories> deletedDirectory = repo.findByNameAndWorkspaceIdAndDeletedTrue(renameRequest.getName(),
+                    existingDirectory.getParentId());
             if (deletedDirectory.isPresent()) {
-                directoryCreator.deletePermanently(deletedDirectory.isPresent(), deletedDirectory.map(Directories::getPath).orElse(null));
+                directoryCreator.deletePermanently(deletedDirectory.isPresent(), deletedDirectory.map(Directories::getPath)
+                        .orElse(null));
             }
         } else {
             if (repo.findByNameAndParentIdAndDeletedFalse(renameRequest.getName(), existingDirectory.getParentId()).isPresent()) {
@@ -147,6 +153,11 @@ public class DirectoriesService {
                 recursivelyUpdateSubPath(existingDirectory, destinationParent);
             }
             directoryCreator.renameDirectory(oldPath, existingDirectory.getPath());
+
+            for (Map.Entry<String, Documents> entry : existingDirectory.getDocuments().entrySet()) {
+                entry.getValue().setPath(existingDirectory.getPath() +"\\"+ entry.getValue().getName());
+            }
+
             repo.save(existingDirectory);
 
         }
@@ -154,7 +165,6 @@ public class DirectoriesService {
     }
 
     public void MoveDirectory(ObjectId id, DirectoryMoveRequest updateRequest) {
-        //TODO Validate if directory belong to same user id from token in all methods
 
         //get the directory to be updated
         Directories existingDirectory = repo.findByIdAndUserIdAndDeletedFalse(id, getUserId()).orElseThrow(
@@ -288,7 +298,9 @@ public class DirectoriesService {
                 }
 
             }
-
+            for (Map.Entry<String, Documents> entry : existingDirectory.getDocuments().entrySet()) {
+                entry.getValue().setPath(existingDirectory.getPath() +"\\"+ entry.getValue().getName());
+            }
         }
         existingDirectory.setLastAccessedAt(new Date());
         repo.save(existingDirectory);
@@ -302,16 +314,17 @@ public class DirectoriesService {
 
         directory.setDeleted(true);
 
-        directoryCreator.hideDirectory(directory.getPath());
-        if (directory.getChildrenIds() != null) {
-            for (ObjectId childId : directory.getChildrenIds()) {
-                deleteDirectory(childId);
-            }
-        }
         if(!directory.getDocuments().isEmpty()){
             for (Map.Entry<String, Documents> entry : directory.getDocuments().entrySet()) {
                 Documents document = entry.getValue();
                 document.setDeleted(true);
+            }
+        }
+
+        directoryCreator.hideDirectory(directory.getPath());
+        if (directory.getChildrenIds() != null) {
+            for (ObjectId childId : directory.getChildrenIds()) {
+                deleteDirectory(childId);
             }
         }
         repo.save(directory);

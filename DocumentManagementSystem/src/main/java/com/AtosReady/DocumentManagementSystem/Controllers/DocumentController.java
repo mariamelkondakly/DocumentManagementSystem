@@ -4,6 +4,7 @@ import com.AtosReady.DocumentManagementSystem.DTO.DocumentMoveRequest;
 import com.AtosReady.DocumentManagementSystem.Services.DocumentService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,8 +37,21 @@ public class DocumentController {
     }
 
     @DeleteMapping("{parentId}/{name}")
-    public ResponseEntity<String> deleteDocument(@PathVariable("parentId") ObjectId parentId,@PathVariable("name") String name) throws IOException {
+    public ResponseEntity<String> deleteDocument(@PathVariable("parentId") ObjectId parentId,@PathVariable("name") String name)
+            throws IOException {
         return service.deleteDocument(parentId,name);
+    }
+
+    @GetMapping("preview/{parentId}/{documentName}")
+    public ResponseEntity<Resource> previewDocument(@PathVariable("parentId") ObjectId parentId,@PathVariable("documentName") String documentName)
+            throws IOException {
+        return service.previewAndDownloadDocument(parentId,documentName,"inline");
+    }
+
+    @GetMapping("download/{parentId}/{documentName}")
+    public ResponseEntity<Resource> downloadDocument(@PathVariable("parentId") ObjectId parentId,@PathVariable("documentName") String documentName)
+            throws IOException {
+        return service.previewAndDownloadDocument(parentId,documentName,"attachment");
     }
 
 }
