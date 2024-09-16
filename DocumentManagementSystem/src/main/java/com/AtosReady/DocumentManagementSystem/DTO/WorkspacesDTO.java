@@ -1,21 +1,19 @@
 package com.AtosReady.DocumentManagementSystem.DTO;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.*;
+import org.bson.types.ObjectId;
 
-@NoArgsConstructor
-@AllArgsConstructor
+import java.util.Date;
+
+@Data
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class WorkspacesDTO {
     private String name;
-
-    @Override
-    public String toString() {
-        return "WorkspacesDTO{" +
-                "name='" + name + '\'' +
-                '}';
-    }
+    private ObjectId id;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    private Date createdAt;
 }

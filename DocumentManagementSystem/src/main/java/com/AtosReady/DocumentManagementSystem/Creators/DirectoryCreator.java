@@ -92,14 +92,6 @@ public class DirectoryCreator {
         ResponseEntity.ok(responseMap);
     }
 
-    public void hideDirectory(String path) throws IOException {
-        File directory = new File(path);
-        if (directory.exists()) {
-            // Recursively hide all contents
-            commonMethods.hideRecursively(directory);
-        }
-    }
-
     public void deletePermanently(boolean present, String path) {
         File dir = Paths.get(commonMethods.baseFolderPath, path).toFile();
         commonMethods.permanentlyDeleteDirectory(present, dir);

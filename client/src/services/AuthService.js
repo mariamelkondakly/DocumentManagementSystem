@@ -2,8 +2,9 @@ import axios from "axios";
 
 const AUTH_REST_API_BASE_URL = "http://localhost:8080";
 
+
 export const registerAPICall = (registerObj) => {
-    console.log(registerObj);
+    
     return axios.post(`${AUTH_REST_API_BASE_URL}/register`, registerObj)
         .then(response => {
             console.log("Registration successful:", response.data);
@@ -29,18 +30,25 @@ export const registerAPICall = (registerObj) => {
 };
 
 
-export const loginAPICall = (loginObj)=>{
-    console.log(loginObj);
+export const loginAPICall = (loginObj,setErrorMessage)=>{
 
     return axios.post(`${AUTH_REST_API_BASE_URL}/login`, loginObj)
-        .then(response => {
-            const token = response.data.token;
-            localStorage.setItem('token', token);
+    .then(response => {
+        const token = response.data;
+        
+        // Store token in local storage
+        localStorage.setItem('token', token);
 
-            console.log("Login successful:", response.data);
-            return response.data;
-        })
-        .catch(error=>{
-            console.error("Login error:", error.response ? error.response.data : error.message);
-            throw error;})
+        console.log("Login successful");
+        return response.data;
+    })
+    .catch((error) => {
+
+        if (error.response && error.response.status === 401) {
+            setErrorMessage("Invalid login credentials");
+        } else {
+            setErrorMessage("An unexpected error occurred");
+        }
+    });
+
 }

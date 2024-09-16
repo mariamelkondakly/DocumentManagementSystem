@@ -28,37 +28,6 @@ public class CommonMethods {
         return dir.delete();
     }
 
-    protected void hideRecursively(File file) throws IOException {
-        if (file.isDirectory()) {
-            // Hide the directory itself
-            hideFile(file.getAbsolutePath());
-
-            // Recursively hide all subdirectories and files
-            for (File child : Objects.requireNonNull(file.listFiles())) {
-                hideRecursively(child);
-            }
-        } else {
-            // Hide the file
-            hideFile(file.getAbsolutePath());
-        }
-    }
-
-    public void hideFile(String filePath) throws IOException {
-        Path path = new File(filePath).toPath();
-
-        if (!Files.exists(path)) {
-            throw new IOException("File not found: " + filePath);
-        }
-
-        // Set the hidden attribute
-        DosFileAttributeView attr = Files.getFileAttributeView(path, DosFileAttributeView.class);
-        if (attr == null) {
-            throw new IOException("DOS file attribute view not supported on this file system.");
-        }
-        attr.setHidden(true);
-    }
-
-
     public void permanentlyDeleteDirectory(boolean present, File dir) {
         if (present && dir.exists()) {
             boolean deleted = deleteDirectoryRecursively(dir);

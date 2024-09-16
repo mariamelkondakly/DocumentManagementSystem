@@ -68,7 +68,6 @@ const RegisterComponent = () => {
 
     try {
       const response = await registerAPICall(register);
-      console.log(response.data);
       clearData();
     } catch (error) {
       console.error("Registration error:", error);
@@ -107,7 +106,7 @@ const RegisterComponent = () => {
                 <input
                   type="text"
                   name="firstName"
-                  className=" ml-2 shadow-lg"
+                  className="ml-2 shadow-lg"
                   placeholder="Enter your name"
                   value={firstName.value}
                   onChange={(e) => {
@@ -121,14 +120,15 @@ const RegisterComponent = () => {
                   <NameErrorMessage />
                 ) : null}
               </div>
-              <div className="row mb-3">
-                <label className="text-2xl col-md-3 control-label" htmlFor="lastName">
+
+              <div className="mb-3">
+                <label className="text-2xl" htmlFor="lastName">
                   Last name
                 </label>
                 <input
                   type="text"
                   name="lastName"
-                  className="form-control"
+                  className="ml-2 shadow-lg"
                   placeholder="Last name"
                   value={lastName.value}
                   onChange={(e) => {
@@ -142,14 +142,14 @@ const RegisterComponent = () => {
                   <NameErrorMessage />
                 ) : null}
               </div>
-              <div className="row mb-3">
-                <label className="text-2xl col-md-3 control-label" htmlFor="age">
+              <div className="mb-3">
+                <label className="text-2xl" htmlFor="age">
                   Age
                 </label>
                 <input
                   type="number"
                   name="age"
-                  className="form-control"
+                  className="ml-2 shadow-lg"
                   placeholder="Enter your age"
                   value={age}
                   onChange={(e) => {
@@ -157,14 +157,14 @@ const RegisterComponent = () => {
                   }}
                 />
               </div>
-              <div className="row mb-3">
-                <label className="text-2xl col-md-3 control-label" htmlFor="nid">
+              <div className="mb-3">
+                <label className="text-2xl" htmlFor="nid">
                   National Id
                 </label>
                 <input
                   type="text"
                   name="nid"
-                  className="form-control"
+                  className="ml-2 shadow-lg"
                   placeholder="Enter your national id"
                   value={nid.value}
                   onChange={(e) => {
@@ -178,14 +178,14 @@ const RegisterComponent = () => {
                   <NIDErrorMessage />
                 ) : null}
               </div>
-              <div className="row mb-3">
-                <label className="text-2xl col-md-3 control-label" htmlFor="email">
+              <div className="mb-3">
+                <label className="text-2xl" htmlFor="email">
                   Email
                 </label>
                 <input
                   type="text"
                   name="email"
-                  className="form-control"
+                  className="ml-2 shadow-lg"
                   placeholder="Enter email"
                   value={email.value}
                   onChange={(e) => {
@@ -200,14 +200,14 @@ const RegisterComponent = () => {
                 ) : null}
               </div>
 
-              <div className="row mb-3">
-                <label className="text-2xl col-md-3 control-label" htmlFor="password">
+              <div className="mb-3">
+                <label className="text-2xl" htmlFor="password">
                   Password
                 </label>
                 <input
                   type="password"
                   name="password"
-                  className="form-control"
+                  className="ml-2 shadow-lg"
                   placeholder="Enter password"
                   value={password.value}
                   onChange={(e) => {
@@ -221,8 +221,6 @@ const RegisterComponent = () => {
                   <PasswordErrorMessage />
                 ) : null}
               </div>
-
-              <div className="form-group mb-3">
                 <button
                   className="btn-primary"
                   onClick={(e) => handleRegistrationForm(e)}
@@ -230,7 +228,6 @@ const RegisterComponent = () => {
                 >
                   Submit
                 </button>
-              </div>
             </form>
           </div>
       </div>

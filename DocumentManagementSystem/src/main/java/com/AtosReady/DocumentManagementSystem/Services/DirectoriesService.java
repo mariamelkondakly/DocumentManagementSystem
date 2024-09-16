@@ -321,7 +321,6 @@ public class DirectoriesService {
             }
         }
 
-        directoryCreator.hideDirectory(directory.getPath());
         if (directory.getChildrenIds() != null) {
             for (ObjectId childId : directory.getChildrenIds()) {
                 deleteDirectory(childId);
@@ -335,7 +334,6 @@ public class DirectoriesService {
                 .orElseThrow(() -> new ResourceNotFoundException("Workspace not found. " +
                         "Exception was raised in the deleteWorkspace method while extracting the workspace"));
 
-        directoryCreator.hideDirectory(workspaces.getUserId() + workspaces.getName());
         workspaces.setDeleted(true);
         for (ObjectId directoryId : workspaces.getDirIds()) {
             deleteDirectory(directoryId);

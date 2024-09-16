@@ -33,10 +33,6 @@ public class WorkspaceService {
 
     //Basic handling of workspaces
 
-    public boolean doesWorkspaceExist(ObjectId id) {
-        return repo.findByIdAndDeletedFalse(id).isPresent();
-    }
-
     public boolean doesWorkspaceNameExist(Long userId, String name) {
         return repo.findByUserIdAndNameAndDeletedFalse(userId, name).isPresent();
     }
@@ -58,7 +54,7 @@ public class WorkspaceService {
         Workspaces newWorkspace = new Workspaces(userId, name);
         repo.save(newWorkspace);
         return creator.createWorkspaceDirectory(Long.toString(userId),
-                workspacesMapper.workspaceWorkspacesDTO(newWorkspace),
+                newWorkspace.getName(),
                 deletedWorkspace.isPresent());
     }
 
@@ -69,7 +65,6 @@ public class WorkspaceService {
 
         return workspaces.map(workspacesMapper::workspaceWorkspacesDTO);
     }
-
 
     //Getting the user's id from the token
     public Long getUserId() {

@@ -66,20 +66,16 @@ public class DocumentCreator {
         return ResponseEntity.ok("File successfully moved to: " + newPath);
     }
 
-    public ResponseEntity<String> deleteDocument(String path) throws IOException {
-        commonMethods.hideFile(path);
-        return ResponseEntity.ok("file successfully deleted");
-    }
-
 
     public ResponseEntity<Resource> previewAndDownloadDocument(String headerType, Documents doc) throws IOException {
-        Path filePath=Paths.get(commonMethods.baseFolderPath, doc.getPath());
+        String documentName=doc.getName().replace("_",".");
+        Path filePath=Paths.get(commonMethods.baseFolderPath, doc.getPath().replace("_","."));
         Resource resource= new UrlResource(filePath.toUri());
         if (!resource.exists()) {
             throw new ResourceNotFoundException("File not found on server: " + filePath);
         }
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, headerType+"; filename=\"" + doc.getName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, headerType+"; filename=\"" + documentName + "\"")
                 .contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
                 .body(resource);
     }

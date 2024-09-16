@@ -1,32 +1,31 @@
 import React, { useState } from "react";
 import { loginAPICall } from "../services/AuthService";
+import { useNavigate } from 'react-router-dom';
+
 
 const LoginComponent = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const navigate = useNavigate();
+
 
   function checkData() {}
 
-  async function handleRegisterationForm(e) {
+  async function handleLoginForm(e) {
     e.preventDefault();
     const login = { email, password };
-    console.log(login);
 
-    loginAPICall(login)
+    loginAPICall(login,setErrorMessage)
       .then((response) => {
-        console.log(response.data);
+        navigate('/workspaces'); 
       })
       .catch((error) => {
-        loginAPICall(login)
-          .then((response) => {
-            console.log(response.data);
-          })
-          .catch((error) => {
-            console.error("Error response:", error.response);
-            console.error("Error message:", error.message);
-            console.error("Error config:", error.config);
-          });
+        console.error("Error response:", error.response);
+        console.error("Error message:", error.message);
+        console.error("Error config:", error.config);
       });
+
   }
 
   return (
@@ -72,10 +71,12 @@ const LoginComponent = () => {
             <div className="form-group mb-3">
               <button
                 className="btn btn-primary"
-                onClick={(e) => handleRegisterationForm(e)}
+                onClick={(e) => handleLoginForm(e)}
               >
                 Submit
               </button>
+              {errorMessage && <p>{errorMessage}</p>}
+
             </div>
           </form>
         </div>

@@ -1,10 +1,14 @@
 package com.AtosReady.DocumentManagementSystem.Controllers;
 
 import com.AtosReady.DocumentManagementSystem.DTO.DocumentMoveRequest;
+import com.AtosReady.DocumentManagementSystem.DTO.WorkspacesDTO;
+import com.AtosReady.DocumentManagementSystem.Models.Directories;
+import com.AtosReady.DocumentManagementSystem.Models.Documents;
 import com.AtosReady.DocumentManagementSystem.Services.DocumentService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +21,13 @@ public class DocumentController {
 
     @Autowired
     private DocumentService service;
+
+    @GetMapping("{name}")
+    public Page<Directories> getWorkspaces(@PathVariable("name") String name,
+                                           @RequestParam(value = "page", defaultValue = "0") int page,
+                                           @RequestParam(value = "size", defaultValue = "10") int size) {
+        return service.searchDocumentByName(name,page, size);
+    }
 
     @PostMapping("{parentId}")
     public ResponseEntity<String> uploadDocument(@PathVariable("parentId") ObjectId parentId,

@@ -3,6 +3,7 @@ package com.AtosReady.DocumentManagementSystem.Models;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -22,6 +23,7 @@ public class Directories {
     private Long userId;
     private ObjectId workspaceId;
     private ObjectId parentId;
+    @TextIndexed
     private String name;
     private Date createdAt;
     private Set<ObjectId> childrenIds = new HashSet<>();

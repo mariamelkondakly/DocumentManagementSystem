@@ -11,6 +11,9 @@ import com.AtosReady.DocumentManagementSystem.Models.Documents;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -193,17 +196,25 @@ public class DocumentService {
                     "exception was thrown in the deleteDocument method in the DocumentService class");
         }
         document.setDeleted(true);
-        return creator.deleteDocument(parentDirectory.getPath()+"\\"+name);
+        return ResponseEntity.ok("file successfully deleted");
     }
 
     public ResponseEntity<Resource> previewAndDownloadDocument(ObjectId parentId, String name,String headerType) throws IOException {
         Directories parentDir = directoriesService.repo.findByIdAndUserIdAndDeletedFalse(parentId, directoriesService.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Parent directory not found." +
                         "exception was thrown in the previewDocument method"));
-        if(!parentDir.getDocuments().containsKey(name)){
+        String sanitizedName=name.replace(".","_");
+        if(!parentDir.getDocuments().containsKey(sanitizedName)){
             throw new ResourceNotFoundException("document not found");
         }
-        Documents doc=parentDir.getDocuments().get(name);
+        Documents doc=parentDir.getDocuments().get(sanitizedName);
         return creator.previewAndDownloadDocument(headerType,doc);
+    }
+
+    public Page<Directories> searchDocumentByName(String documentName,int pageNumber, int pageSize) {
+        String sanitisedName=documentName.replace(".","_");
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        return directoriesService.repo.findByDocumentsName(sanitisedName,pageable);
     }
 }
