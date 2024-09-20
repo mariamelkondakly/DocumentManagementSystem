@@ -10,14 +10,14 @@ const WorkspaceRow = ({ workspace, onDelete }) => {
         {workspace.name}
       </td>
       <td>
-        <h6 className="text-muted">{workspace.dateCreated}</h6>
+        <h6 className="text-muted">{workspace.createdAt}</h6>
       </td>
       <td>
-        <Link to={`/workspace/details/${workspace.id}`} className="btn btn-info btn-sm me-2">
+        <Link to={`/workspace/details/${workspace.id}`} className="btn btn-info btn-sm theme-bg">
           View
         </Link>
         <button 
-          className="btn btn-danger btn-sm"
+          className="btn btn-info btn-sm theme-bg2"
           onClick={() => onDelete(workspace.id)}
         >
           Delete

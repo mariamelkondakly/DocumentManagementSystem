@@ -11,7 +11,22 @@ const menuItems = {
           title: 'Dashboard',
           type: 'item',
           icon: 'feather icon-home',
-          url: '/app/dashboard/default'
+          url: '/Home'
+        }
+      ]
+    },
+    {
+      id: 'workspaces',
+      title: 'Workspaces',
+      type: 'group',
+      icon: 'icon-navigation',
+      children: [
+        {
+          id: 'viewWorkspaces',
+          title: 'View workspaces',
+          type: 'item',
+          icon: 'feather icon-folder',
+          url: '/workspaces'
         }
       ]
     },
@@ -208,14 +223,6 @@ const menuItems = {
               ]
             }
           ]
-        },
-        {
-          id: 'disabled-menu',
-          title: 'Disabled Menu',
-          type: 'item',
-          url: '#',
-          classes: 'nav-item disabled',
-          icon: 'feather icon-power'
         }
       ]
     }

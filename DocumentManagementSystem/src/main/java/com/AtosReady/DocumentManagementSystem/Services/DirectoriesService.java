@@ -34,10 +34,10 @@ public class DirectoriesService {
     protected DirectoriesRepo repo;
 
     @Autowired
-    private WorkspaceService workspaceService;
+    protected WorkspaceService workspaceService;
 
     @Autowired
-    private DirectoriesMapper directoriesMapper;
+    protected DirectoriesMapper directoriesMapper;
 
     @Autowired
     private DirectoryCreator directoryCreator;

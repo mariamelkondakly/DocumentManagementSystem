@@ -215,3 +215,23 @@ a.btn-theme {
 .btn:not(:disabled):not(.disabled) {
   cursor: pointer;
 }
+.add-workspace-button {
+  width: 30px; /* Adjust as needed */
+  height: 40px; /* Adjust as needed */
+  font-size: 24px; /* Adjust size of plus sign */
+  text-align: center;
+  transition: width 0.1s;
+}
+
+.add-workspace-button:hover {
+  width: 150px; /* Expanded width */
+  height: 40px; /* Keep height the same */
+  background-color: #007bff; /* Bootstrap primary color */
+  font-size: 12px; /* Adjust size of plus sign */
+
+  color: white;
+}
+
+.add-workspace-button:focus {
+  outline: none; /* Remove focus outline */
+}

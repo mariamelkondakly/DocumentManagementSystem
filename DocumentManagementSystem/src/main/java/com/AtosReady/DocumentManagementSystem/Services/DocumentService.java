@@ -1,13 +1,17 @@
 package com.AtosReady.DocumentManagementSystem.Services;
 
 import com.AtosReady.DocumentManagementSystem.Creators.DocumentCreator;
+import com.AtosReady.DocumentManagementSystem.DTO.DirectoryDTO;
 import com.AtosReady.DocumentManagementSystem.DTO.DocumentMoveRequest;
+import com.AtosReady.DocumentManagementSystem.DTO.SearchResults;
+import com.AtosReady.DocumentManagementSystem.DTO.WorkspacesDTO;
 import com.AtosReady.DocumentManagementSystem.Exceptions.EmptyFileException;
 import com.AtosReady.DocumentManagementSystem.Exceptions.InvalidSignatureException;
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceExistsException;
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceNotFoundException;
 import com.AtosReady.DocumentManagementSystem.Models.Directories;
 import com.AtosReady.DocumentManagementSystem.Models.Documents;
+import com.AtosReady.DocumentManagementSystem.Models.Workspaces;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -211,10 +215,22 @@ public class DocumentService {
         return creator.previewAndDownloadDocument(headerType,doc);
     }
 
-    public Page<Directories> searchDocumentByName(String documentName,int pageNumber, int pageSize) {
-        String sanitisedName=documentName.replace(".","_");
+    public SearchResults searchDocumentsAndWorkspaces(String searchName, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        String sanitisedName = searchName.contains(".") ? searchName.replace(".", "_") : searchName;
 
-        return directoriesService.repo.findByDocumentsName(sanitisedName,pageable);
+        // Search in documents
+        Page<Directories> documentResults = directoriesService.repo.findByDocumentsName(directoriesService.getUserId(), sanitisedName, pageable);
+        // Search in workspaces
+        Page<Workspaces> workspaceResults = directoriesService.workspaceService.repo.findByUserIdAndNameAndDeletedFalse(
+                directoriesService.getUserId(), searchName, pageable);
+
+        Page<DirectoryDTO> documentResultsDTO=documentResults.map(directoriesService.directoriesMapper::directoryToDirectoryDTO);
+        Page<WorkspacesDTO> workspaceResultsDTO= workspaceResults.map(directoriesService.workspaceService.workspacesMapper::workspaceWorkspacesDTO);
+
+
+        // Return combined results in a custom response object
+        return new SearchResults(documentResultsDTO, workspaceResultsDTO);
     }
+
 }

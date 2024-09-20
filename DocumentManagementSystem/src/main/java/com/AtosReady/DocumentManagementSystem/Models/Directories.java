@@ -1,5 +1,6 @@
 package com.AtosReady.DocumentManagementSystem.Models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
@@ -25,8 +26,10 @@ public class Directories {
     private ObjectId parentId;
     @TextIndexed
     private String name;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private Date createdAt;
     private Set<ObjectId> childrenIds = new HashSet<>();
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private Date lastAccessedAt;
     private String path;
     private HashMap<String, Documents> documents = new HashMap<>();

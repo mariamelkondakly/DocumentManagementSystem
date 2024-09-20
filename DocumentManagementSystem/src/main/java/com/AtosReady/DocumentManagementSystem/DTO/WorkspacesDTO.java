@@ -13,7 +13,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class WorkspacesDTO {
     private String name;
-    private ObjectId id;
+    private String id;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private Date createdAt;
 }

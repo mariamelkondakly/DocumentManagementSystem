@@ -52,6 +52,11 @@ const routes = [
       },
       {
         exact: 'true',
+        path: '/workspaces',
+        element: lazy(() => import('./views/workspaces/index'))
+      },
+      {
+        exact: 'true',
         path: '/basic/button',
         element: lazy(() => import('./views/ui-elements/basic/BasicButton'))
       },

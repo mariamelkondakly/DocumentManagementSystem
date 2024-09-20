@@ -28,6 +28,7 @@ public interface DirectoriesRepo extends MongoRepository<Directories, ObjectId> 
 //    @Query("{ '$text': { '$search': ?0 } }")
 //    @Query("{ 'documents.name' :  }")
 //    @Query("{ 'documents.$*.name' : ?0 }")
-@Query("{ '$or': [{ 'documents.?0': { $exists: true } }, { 'name': { '$regex': ?0, '$options': 'i' } } ] }")
-    Page<Directories> findByDocumentsName(String documentName, Pageable pageable);
+//@Query("{ '$or': [{ 'documents.?0': { $exists: true } }, { 'userId': ?0, 'name': {'$regex': ?1, '$options': 'i' }, 'deleted': false } } ] }")
+@Query("{ '$or': [ { 'documents.*.name': { $regex: ?1, $options: 'i' } }, { 'userId': ?0, 'name': { '$regex': ?1, '$options': 'i' }, 'deleted': false } ] }")
+Page<Directories> findByDocumentsName(Long userId, String documentName, Pageable pageable);
 }

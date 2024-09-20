@@ -5,6 +5,7 @@ import com.AtosReady.DocumentManagementSystem.DTO.WorkspacesDTO;
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceExistsException;
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceNotFoundException;
 import com.AtosReady.DocumentManagementSystem.Mappers.WorkspacesMapper;
+import com.AtosReady.DocumentManagementSystem.Models.Directories;
 import com.AtosReady.DocumentManagementSystem.Models.Workspaces;
 import com.AtosReady.DocumentManagementSystem.Repositories.WorkspaceRepo;
 import org.bson.types.ObjectId;
@@ -26,7 +27,7 @@ public class WorkspaceService {
     WorkspaceRepo repo;
 
     @Autowired
-    private WorkspacesMapper workspacesMapper;
+    WorkspacesMapper workspacesMapper;
 
     @Autowired
     private WorkspaceCreator creator;

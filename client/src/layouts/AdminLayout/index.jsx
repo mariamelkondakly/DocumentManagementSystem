@@ -4,11 +4,14 @@ import React, { useContext, useEffect, useRef } from 'react';
 import Navigation from './Navigation';
 import NavBar from './NavBar';
 import Breadcrumb from './Breadcrumb';
+import NavSearch from './NavBar/NavLeft/NavSearch';
+
 
 import useWindowSize from '../../hooks/useWindowSize';
 import useOutsideClick from '../../hooks/useOutsideClick';
 import { ConfigContext } from '../../contexts/ConfigContext';
 import * as actionType from '../../store/actions';
+import { ListGroup } from 'react-bootstrap';
 
 const AdminLayout = ({ children }) => {
   const windowSize = useWindowSize();
@@ -55,8 +58,12 @@ const AdminLayout = ({ children }) => {
         <div className={mainClass.join(' ')}>
           <div className="pcoded-content">
             <div className="pcoded-inner-content">
+              <NavSearch windowWidth={windowSize.width}/>
               <Breadcrumb />
               {children}
+            </div>
+            <div>
+            
             </div>
           </div>
         </div>

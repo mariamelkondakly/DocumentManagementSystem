@@ -67,9 +67,9 @@ public class DirectoryController {
 
 
     //Delete Endpoints
-    @DeleteMapping("/deleteWorkspace/{id}")
-    public ResponseEntity<String> deleteWorkspace(@PathVariable("id") ObjectId id) throws IOException {
-        service.deleteWorkspace(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteWorkspace(@PathVariable("id") String id) throws IOException {
+        service.deleteWorkspace(new ObjectId(id));
         return ResponseEntity.ok("Workspace deleted successfully.");
     }
 

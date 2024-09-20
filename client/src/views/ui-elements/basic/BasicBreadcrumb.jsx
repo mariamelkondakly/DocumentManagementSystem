@@ -47,7 +47,7 @@ const BasicBreadcrumbPagination = () => {
               </Breadcrumb.Item>
             </Breadcrumb>
             <Breadcrumb>
-              <Breadcrumb.Item to="#">Home</Breadcrumb.Item>
+              <Breadcrumb.Item to="/Home">Home</Breadcrumb.Item>
               <Breadcrumb.Item to="#">Library</Breadcrumb.Item>
               <Breadcrumb.Item active>Data</Breadcrumb.Item>
             </Breadcrumb>
@@ -56,7 +56,7 @@ const BasicBreadcrumbPagination = () => {
         <Col md={6}>
           <Card title="Breadcrumb Icon">
             <Breadcrumb>
-              <Breadcrumb.Item to="#" active>
+              <Breadcrumb.Item to="/Home" active>
                 <i className="feather icon-home" />
               </Breadcrumb.Item>
             </Breadcrumb>

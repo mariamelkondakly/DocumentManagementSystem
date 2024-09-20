@@ -16,7 +16,7 @@ public class WorkspaceController {
     @Autowired
     private WorkspaceService workspaceService;
 
-    @PostMapping("/add/{name}")
+    @PostMapping("/createWorkspace/{name}")
     public ResponseEntity<HashMap<String, Object>> AddWorkspace(@PathVariable("name") String name) {
         return workspaceService.createNewWorkspace(workspaceService.getUserId(), name);
     }
