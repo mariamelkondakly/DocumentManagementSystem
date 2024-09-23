@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -68,20 +69,21 @@ public class DirectoriesService {
 
     }
 
-    public ResponseEntity<HashMap<String, Object>> createRootDirectory(ObjectId workspaceId, DirectoryDTO dir) {
+    public ResponseEntity<HashMap<String, Object>> createRootDirectory(String workspaceIdS, String dirName) {
+        ObjectId workspaceId= new ObjectId(workspaceIdS);
         workspaceService.repo.findById(workspaceId).orElseThrow(() -> new ResourceNotFoundException("Workspace doesn't exist"));
-        if (repo.findByNameAndWorkspaceIdAndDeletedFalse(dir.getName(), workspaceId).isPresent()) {
+        if (repo.findByNameAndWorkspaceIdAndDeletedFalse(dirName, workspaceId).isPresent()) {
             throw new ResourceExistsException("Directory with this name already exists");
         }
         Workspaces workspace = workspaceService.repo.findById(workspaceId).
                 orElseThrow(() -> new ResourceNotFoundException("Workspace doesn't exist."));
-        Optional<Directories> deletedDirectory = repo.findByNameAndWorkspaceIdAndDeletedTrue(dir.getName(), workspaceId);
+        Optional<Directories> deletedDirectory = repo.findByNameAndWorkspaceIdAndDeletedTrue(dirName, workspaceId);
         deletedDirectory.ifPresent(directory -> repo.delete(directory));
 
         Directories newDir = new Directories();
         newDir.setUserId(workspaceService.getUserId());
         newDir.setWorkspaceId(workspaceId);
-        newDir.setName(dir.getName());
+        newDir.setName(dirName);
         repo.save(newDir);
         newDir.setPath(directoryCreator.rootPathSetter(newDir, workspace));
         repo.save(newDir);
@@ -102,11 +104,18 @@ public class DirectoriesService {
         return directories.map(directoriesMapper::directoryToDirectoryDTO);
     }
 
-    public Page<DirectoryDTO> getDirsByWorkspaceId(ObjectId workspaceId, int pageNumber, int pageSize) {
+    public List<Object> getDirsByWorkspaceId(ObjectId workspaceId, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Workspaces workspaces = workspaceService.repo.findByIdAndDeletedFalse(workspaceId)
+                .orElseThrow(() -> new ResourceNotFoundException("Workspace doesn't exist"));
+
         Page<Directories> directories = repo.findAllByWorkspaceIdAndDeletedFalse(workspaceId, pageable);
-        return directories.map(directoriesMapper::directoryToDirectoryDTO);
+        List<Object> result=new ArrayList<>();
+        result.add(workspaces.getName());
+        result.add(directories.map(directoriesMapper::directoryToDirectoryDTO));
+        return result;
     }
+
 
     //Putter methods
     public void RenameDirectory(ObjectId id, DirectoryRenameRequest renameRequest) {
@@ -164,8 +173,8 @@ public class DirectoriesService {
 
     }
 
-    public void MoveDirectory(ObjectId id, DirectoryMoveRequest updateRequest) {
-
+    public void MoveDirectory(String idS, DirectoryMoveRequest updateRequest) {
+        ObjectId id=new ObjectId(idS);
         //get the directory to be updated
         Directories existingDirectory = repo.findByIdAndUserIdAndDeletedFalse(id, getUserId()).orElseThrow(
                 () -> new ResourceNotFoundException("Directory not found, exception was raised in the moveDirectory" +
@@ -175,7 +184,7 @@ public class DirectoriesService {
         String oldPath = existingDirectory.getPath();
 
         //check if the request is about moving the directory
-        if (!existingDirectory.getParentId().equals(updateRequest.getParentId())) {
+        //if (!existingDirectory.getParentId().equals(updateRequest.getParentId())) {
 
             //check if the directory was originally a subdirectory
             if (!updateRequest.isOriginalRoot()) {
@@ -301,7 +310,7 @@ public class DirectoriesService {
             for (Map.Entry<String, Documents> entry : existingDirectory.getDocuments().entrySet()) {
                 entry.getValue().setPath(existingDirectory.getPath() +"\\"+ entry.getValue().getName());
             }
-        }
+        //}
         existingDirectory.setLastAccessedAt(new Date());
         repo.save(existingDirectory);
     }

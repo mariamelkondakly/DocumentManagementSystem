@@ -2,7 +2,7 @@ import React from 'react';
 import { Table } from 'react-bootstrap';
 import WorkspaceRow from './WorkspaceRow'; // Adjust the import path if necessary
 
-const WorkspacesTable = ({ workspaces = [], onDelete }) => {
+const WorkspacesTable = ({ workspaces = [], onWorkspaceDeleted }) => {
   if (!Array.isArray(workspaces)) {
     return <p>No workspaces available.</p>;
   }
@@ -22,8 +22,7 @@ const WorkspacesTable = ({ workspaces = [], onDelete }) => {
             <WorkspaceRow 
               key={workspace.id} 
               workspace={workspace} 
-              onDelete={onDelete} 
-            />
+              onWorkspaceDeleted={onWorkspaceDeleted}            />
           ))
         ) : (
           <tr>

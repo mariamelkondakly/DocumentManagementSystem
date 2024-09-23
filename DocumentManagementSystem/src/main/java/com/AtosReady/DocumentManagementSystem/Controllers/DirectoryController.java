@@ -7,11 +7,14 @@ import com.AtosReady.DocumentManagementSystem.Services.DirectoriesService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/workspaces")
@@ -21,11 +24,11 @@ public class DirectoryController {
     private DirectoriesService service;
 
     //Post Endpoints
-    @PostMapping("/root/{workspace_id}")
-    public ResponseEntity<HashMap<String, Object>> createRootDirectory(@PathVariable ObjectId workspace_id,
-                                                                       @RequestBody DirectoryDTO dir) {
+    @PostMapping("/root/{workspace_id}/{name}")
+    public ResponseEntity<HashMap<String, Object>> createRootDirectory(@PathVariable String workspace_id,
+                                                                       @PathVariable String name) {
 
-        return service.createRootDirectory(workspace_id, dir);
+        return service.createRootDirectory(workspace_id, name);
     }
 
     @PostMapping("/{parent_id}")
@@ -44,15 +47,15 @@ public class DirectoryController {
     }
 
     @GetMapping("/root/{workspaceId}")
-    public Page<DirectoryDTO> getDirectoriesInWorkspaces(@PathVariable("workspaceId") ObjectId workspaceId,
-                                                         @RequestParam(value = "page", defaultValue = "0") int page,
-                                                         @RequestParam(value = "size", defaultValue = "10") int size) {
+    public List<Object> getDirectoriesInWorkspaces(@PathVariable("workspaceId") ObjectId workspaceId,
+                                                   @RequestParam(value = "page", defaultValue = "0") int page,
+                                                   @RequestParam(value = "size", defaultValue = "10") int size) {
         return service.getDirsByWorkspaceId(workspaceId, page, size);
     }
 
     //Put Endpoints
     @PutMapping("/move/{id}")
-    public ResponseEntity<String> moveDirectory(@PathVariable("id") ObjectId id,
+    public ResponseEntity<String> moveDirectory(@PathVariable("id") String id,
                                                 @RequestBody DirectoryMoveRequest updateRequest) {
         service.MoveDirectory(id, updateRequest);
         return ResponseEntity.ok("Directory updated successfully");

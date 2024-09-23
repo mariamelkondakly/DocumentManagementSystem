@@ -56,7 +56,7 @@ const NavSearch = (props) => {
 
   return (
     <React.Fragment>
-      <div id="main-search" className="mb-4">
+      <div id="main-search" className="mb-4 ">
         <div className="input-group">
           <input
             type="text"
@@ -70,9 +70,9 @@ const NavSearch = (props) => {
           <span
             role="button"
             tabIndex="0"
-            className="input-group-append search-btn btn btn-primary"
+            className=" search-btn btn-theme"
           >
-            <i className="feather icon-search input-group-text" />
+            <i className="feather icon-search" />
           </span>
         </div>
         {loading && <p>Loading...</p>}
@@ -111,12 +111,12 @@ const NavSearch = (props) => {
                         <tr key={workspace.id}>
                           <td>{index + 1}</td>
                           <td>
-                            <FaFolder className="text-primary me-2" style={{ fontSize: '24px'}} />
+                            <FaFolder className=" text-c-green me-2" style={{ fontSize: '24px'}} />
                             {workspace.name}
                           </td>
                           <td>{workspace.createdAt}</td>
                           <td>
-                            <Link to={`/directory/details/${workspace.id}`} className="btn btn-info btn-sm theme-bg">
+                            <Link to={`/rootDirectories/${workspace.id}`} className="btn btn-sm btn-theme">
                               View
                             </Link>
                           </td>
@@ -136,12 +136,12 @@ const NavSearch = (props) => {
                         <tr key={dir.id}>
                           <td>{index + 1}</td>
                           <td>
-                            <FaFolder className="me-2" style={{ fontSize: '24px', color: '#FFD700' }} />
+                            <FaFolder className="me-2" style={{ fontSize: '24px',color: "#f88379"  }} />
                             {dir.name}
                           </td>
                           <td>{dir.createdAt}</td>
                           <td>
-                            <Link to={`/directory/details/${dir.id}`} className="btn btn-info btn-sm theme-bg">
+                            <Link to={`/directory/details/${dir.id}`} className="btn btn-sm btn-theme">
                               View
                             </Link>
                           </td>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Spinner, Alert, Button, Modal, Form } from 'react-bootstrap';
-import WorkspacesTable from '../tables/WorkspacesTable'; // Adjust the import path if necessary
-import apiClient from '../../services/Interceptor'; // Adjust the import path if necessary
+import WorkspacesTable from '../tables/Workspaces/WorkspacesTable'; // Adjust the import path if necessary
+import WorkspaceService from 'services/WorkspaceService'; // Import the service
 
 const WorkspaceComponent = () => {
   const [workspaces, setWorkspaces] = useState([]);
@@ -12,51 +12,14 @@ const WorkspaceComponent = () => {
   const [newWorkspaceName, setNewWorkspaceName] = useState(''); // Store the new workspace name
 
   useEffect(() => {
-    const parseDate = (dateStr) => {
-      const parts = dateStr.split(' ');
-      if (parts.length !== 2) {
-        console.error(`Invalid format: ${dateStr}`);
-        return new Date(NaN); // Return an invalid date
-      }
-
-      const [day, month, year] = parts[0].split('-');
-      const [hour, minute, second] = parts[1].split(':');
-
-      if (!day || !month || !year || !hour || !minute || !second) {
-        console.error(`Incomplete date parts: ${dateStr}`);
-        return new Date(NaN); // Return an invalid date
-      }
-
-      // Convert to ISO 8601 format: "YYYY-MM-DDTHH:MM:SSZ"
-      const isoDateStr = `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
-      const dateObj = new Date(isoDateStr);
-
-      if (isNaN(dateObj.getTime())) {
-        console.error(`Invalid date conversion: ${dateStr} -> ${isoDateStr}`);
-      }
-
-      return dateObj;
-    };
-
-    // Fetch workspaces data
     const fetchWorkspaces = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await apiClient.get('', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        let fetchedWorkspaces = response.data.content;
-
-        fetchedWorkspaces.sort((a, b) => parseDate(b.createdAt) - parseDate(a.createdAt));
-
-        setWorkspaces(fetchedWorkspaces);
-      } catch (err) {
-        setError('Failed to fetch workspaces');
-      } finally {
-        setLoading(false);
+      const result = await WorkspaceService.fetchWorkspaces();
+      if (result.success) {
+        setWorkspaces(result.data);
+      } else {
+        setError(result.message);
       }
+      setLoading(false);
     };
 
     fetchWorkspaces();
@@ -68,38 +31,23 @@ const WorkspaceComponent = () => {
   };
 
   const handleCreateWorkspace = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      // Send POST request to create new workspace
-      await apiClient.post(`/createWorkspace/${newWorkspaceName}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
+    const result = await WorkspaceService.createWorkspace(newWorkspaceName);
+    if (result.success) {
       // Refresh the workspaces after adding
-      const response = await apiClient.get('', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setWorkspaces(response.data.content);
+      const refreshedResult = await WorkspaceService.fetchWorkspaces();
+      setWorkspaces(refreshedResult.data);
 
       // Close the modal after creating the workspace
       setShowModal(false);
       setNewWorkspaceName('');
-    } catch (err) {
-      setError('Failed to create new workspace');
+    } else {
+      setError(result.message);
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await apiClient.delete(`/${id}`);
-      setWorkspaces(workspaces.filter((workspace) => workspace.id !== id));
-    } catch (err) {
-      setError('Failed to delete workspace');
-    }
+  const handleWorkspaceDeleted = (id) => {
+    // Optimistically update the state to remove the deleted workspace
+    setWorkspaces((prevWorkspaces) => prevWorkspaces.filter((workspace) => workspace.id !== id));
   };
 
   if (loading) return <Spinner animation="border" />;
@@ -111,7 +59,7 @@ const WorkspaceComponent = () => {
         <Row className="mb-4">
           <Col>
             <Button
-              className="add-workspace-button"
+              className="add-workspace-button btn btn-theme"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
               onClick={handleAddWorkspace}
@@ -127,7 +75,7 @@ const WorkspaceComponent = () => {
               <span className="d-block m-t-5">All of your workspaces, in one place</span>
             </Card.Header>
             <Card.Body className="px-0 py-2">
-              <WorkspacesTable workspaces={workspaces} onDelete={handleDelete} />
+              <WorkspacesTable workspaces={workspaces} onWorkspaceDeleted={handleWorkspaceDeleted} />
             </Card.Body>
           </Card>
         </Row>

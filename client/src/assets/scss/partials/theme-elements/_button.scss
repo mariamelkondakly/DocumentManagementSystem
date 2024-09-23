@@ -94,7 +94,30 @@ a.btn-theme {
     border: 1px solid transparent;
   }
 }
+.btn-theme3,
+a.btn-theme3 {
+  background: $theme-color3;
+  color: #fff;
+  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.2);
+  border-color: #ffafbd;
+  border-radius: 0.25rem;
+  padding: 11px 25px;
 
+  &:active,
+  &:focus,
+  &:not(:disabled):not(.disabled):active {
+    background-image: $theme-color3;
+    color: #fff;
+    box-shadow: none;
+  }
+
+  &.active {
+    background-image: #fff !important;
+    color: $default-color;
+    border: 1px solid $theme-border;
+    box-shadow: none;
+  }
+}
 .btn {
   padding: 10px 20px;
   border-radius: 0.25rem;
@@ -221,12 +244,14 @@ a.btn-theme {
   font-size: 24px; /* Adjust size of plus sign */
   text-align: center;
   transition: width 0.1s;
+  background-color: #1de1c2; 
+
 }
 
 .add-workspace-button:hover {
   width: 150px; /* Expanded width */
   height: 40px; /* Keep height the same */
-  background-color: #007bff; /* Bootstrap primary color */
+  background-color: #1de1c2; /* Bootstrap primary color */
   font-size: 12px; /* Adjust size of plus sign */
 
   color: white;

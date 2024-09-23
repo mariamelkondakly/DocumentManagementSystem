@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
@@ -34,11 +33,14 @@ public class Directories {
     private String path;
     private HashMap<String, Documents> documents = new HashMap<>();
     private boolean deleted = false;
-
-
-    public Directories(Long userId, ObjectId workspace_id, ObjectId parent_id, String name) {
+    public Directories(){
         this.createdAt = new Date();
         this.lastAccessedAt = new Date();
+
+    }
+    public Directories(Long userId, ObjectId workspace_id, ObjectId parent_id, String name) {
+        this();
+        this.userId=userId;
         this.workspaceId = workspace_id;
         this.parentId = parent_id;
         this.name = name;

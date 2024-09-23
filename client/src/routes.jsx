@@ -56,6 +56,11 @@ const routes = [
         element: lazy(() => import('./views/workspaces/index'))
       },
       {
+        exact: 'true', 
+        path: '/rootDirectories/:workspaceId', 
+        element: lazy(() => import('./views/directories/index'))
+      },
+      {
         exact: 'true',
         path: '/basic/button',
         element: lazy(() => import('./views/ui-elements/basic/BasicButton'))
@@ -89,11 +94,6 @@ const routes = [
         exact: 'true',
         path: '/forms/form-basic',
         element: lazy(() => import('./views/forms/FormsElements'))
-      },
-      {
-        exact: 'true',
-        path: '/tables/bootstrap',
-        element: lazy(() => import('./views/tables/BootstrapTable'))
       },
       {
         exact: 'true',
