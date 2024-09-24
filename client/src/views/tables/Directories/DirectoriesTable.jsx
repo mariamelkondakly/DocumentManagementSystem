@@ -26,6 +26,7 @@ const DirectoriesTable = ({ directories = [], onDirectoriesDeleted, onDirectoryM
               directory={directory} 
               onDirectoryDeleted={onDirectoriesDeleted} 
               onDirectoryMoved={onDirectoryMoved}
+              
             />
           ))
         ) : (

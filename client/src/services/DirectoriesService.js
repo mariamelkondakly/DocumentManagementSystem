@@ -13,9 +13,24 @@ const DirectoriesService={
          catch (error) {
             console.error("API Error:", error); // Log the actual error
 
-          return { success: false, message: 'Failed to load root directories' };
+          return { success: false, message: 'Failed to load directories' };
         }
     },
+
+    viewSubDirectories: async(parentId)=>{
+      try{
+          const token= localStorage.getItem('token');
+          const response=await apiClient.get(`/${parentId}`, {headers:{
+              Authorization: `Bearer ${token}`
+          }});
+      return { success: true, data: response.data };
+      }
+       catch (error) {
+          console.error("API Error:", error); // Log the actual error
+
+        return { success: false, message: 'Failed to load directories' };
+      }
+  },
 
     createRootDirectory: async (workspaceId, name) => {
       try {
@@ -38,6 +53,38 @@ const DirectoriesService={
             message = 'Unauthorized: Please check your login status.';
           } else if (error.response.status === 403) {
             message = 'Forbidden: You do not have permission to create a root directory.';
+          } else if (error.response.status === 404) {
+            message = 'Workspace not found.';
+          }
+        } else if (error.request) {
+          // Request was made but no response received
+          message = 'No response from server. Please check your network connection.';
+        }
+    
+        return { success: false, message };
+      }
+    },
+    createSubDirectory: async (parentId, name) => {
+      try {
+        const token = localStorage.getItem('token');
+        
+        const response = await apiClient.post(`/${parentId}/${name}`, 
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        
+        return { success: true, data: response.data };
+      } catch (error) {
+        console.error("API Error:", error.response?.data || error.message); // Log actual error response if available
+    
+        let message = 'Failed to create sub directory';
+        
+        // Handle specific error cases
+        if (error.response) {
+          // Server response with an error status code
+          if (error.response.status === 401) {
+            message = 'Unauthorized: Please check your login status.';
+          } else if (error.response.status === 403) {
+            message = 'Forbidden: You do not have permission to create a sub directory.';
           } else if (error.response.status === 404) {
             message = 'Workspace not found.';
           }

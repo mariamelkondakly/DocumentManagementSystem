@@ -44,9 +44,9 @@ public class DirectoriesService {
     private DirectoryCreator directoryCreator;
 
     //Poster methods
-    public ResponseEntity<HashMap<String, Object>> createSubDirectory(ObjectId parentID, DirectoryDTO dir) {
+    public ResponseEntity<HashMap<String, Object>> createSubDirectory(ObjectId parentID, String dirName) {
 
-        if (repo.findByNameAndParentIdAndDeletedFalse(dir.getName(), parentID).isPresent()) {
+        if (repo.findByNameAndParentIdAndDeletedFalse(dirName, parentID).isPresent()) {
             throw new ResourceExistsException("Directory with this name already exists. " +
                     "Exception was thrown before creating the new user in the createSubDirectory Method");
         }
@@ -54,10 +54,10 @@ public class DirectoriesService {
                 .orElseThrow(() -> new ResourceNotFoundException("parent directory doesn't exist." +
                         "Exception was thrown while trying to get the new parent in the createSubDirectory Method"));
 
-        Optional<Directories> deletedDirectory = repo.findByNameAndParentIdAndDeletedTrue(dir.getName(), parentID);
+        Optional<Directories> deletedDirectory = repo.findByNameAndParentIdAndDeletedTrue(dirName, parentID);
         deletedDirectory.ifPresent(directory -> repo.delete(directory));
 
-        Directories newDir = new Directories(workspaceService.getUserId(), null, parentID, dir.getName());
+        Directories newDir = new Directories(workspaceService.getUserId(), null, parentID, dirName);
 
         repo.save(newDir);
         newDir.setPath(directoryCreator.pathSetter(newDir, parent));
@@ -94,17 +94,22 @@ public class DirectoriesService {
     }
 
     //Getter methods
-    public Page<DirectoryDTO> getDirsByParentId(ObjectId parentId, int pageNumber, int pageSize) {
+    public List<Object> getDirsByParentId(String parentIds, int pageNumber, int pageSize) {
+        ObjectId parentId=new ObjectId(parentIds);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Directories parent = repo.findByIdAndUserIdAndDeletedFalse(parentId, getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Directory doesn't exist"));
         Page<Directories> directories = repo.findAllByParentIdAndDeletedFalse(parentId, pageable);
         parent.setLastAccessedAt(new Date());
         repo.save(parent);
-        return directories.map(directoriesMapper::directoryToDirectoryDTO);
+        List<Object> result=new ArrayList<>();
+        result.add(parent.getName());
+        result.add(directories.map(directoriesMapper::directoryToDirectoryDTO));
+        return result;
     }
 
-    public List<Object> getDirsByWorkspaceId(ObjectId workspaceId, int pageNumber, int pageSize) {
+    public List<Object> getDirsByWorkspaceId(String workspaceIds, int pageNumber, int pageSize) {
+        ObjectId workspaceId=new ObjectId(workspaceIds);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Workspaces workspaces = workspaceService.repo.findByIdAndDeletedFalse(workspaceId)
                 .orElseThrow(() -> new ResourceNotFoundException("Workspace doesn't exist"));

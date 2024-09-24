@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaFolder } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import DirectoriesService from '../../../services/DirectoriesService';
 import WorkspaceService from '../../../services/WorkspaceService';
 import MoveModal from './MoveModal'; // Add the move modal component
@@ -9,6 +9,8 @@ const DirectoriesRow = ({ directory, onDirectoryDeleted, onDirectoryMoved}) => {
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [selectedDirectory, setSelectedDirectory] = useState(null);
   const [workspaces, setWorkspaces] = useState([]);
+  const navigate = useNavigate();
+
 
 
 
@@ -23,6 +25,10 @@ const DirectoriesRow = ({ directory, onDirectoryDeleted, onDirectoryMoved}) => {
       }
     }
   };
+  const handleViewClick = async (id) => {
+    navigate(`/subDirectories/${id}`); // Navigate to the root directories page
+  };
+
   const fetchWorkspaces = async () => {
     const result = await WorkspaceService.fetchWorkspaces();
     if (result.success) {
@@ -71,9 +77,9 @@ const DirectoriesRow = ({ directory, onDirectoryDeleted, onDirectoryMoved}) => {
           <h6 className="text-muted">{directory.lastAccessedAt}</h6>
         </td>
         <td>
-          <Link to={`/workspace/details/${directory.id}`} className="btn btn-theme">
+          <button onClick={()=>handleViewClick(directory.id)} className="btn btn-theme">
             View
-          </Link>
+          </button>
           <button 
             className="btn btn-theme3"
             onClick={() => handleMove(directory)} // Handle move button click

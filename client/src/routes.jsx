@@ -58,7 +58,12 @@ const routes = [
       {
         exact: 'true', 
         path: '/rootDirectories/:workspaceId', 
-        element: lazy(() => import('./views/directories/index'))
+        element: lazy(() => import('./views/directories/root/index'))
+      },
+      {
+        exact: 'true', 
+        path: '/subDirectories/:parentId', 
+        element: lazy(() => import('./views/directories/sub/index'))
       },
       {
         exact: 'true',

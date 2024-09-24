@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import DirectoriesService from '../../services/DirectoriesService'; // Adjust the import path as needed
-import DirectoriesTable from '../tables/Directories/DirectoriesTable';
+import DirectoriesService from '../../../services/DirectoriesService'; // Adjust the import path as needed
+import DirectoriesTable from '../../tables/Directories/DirectoriesTable';
 import { Form, Modal, Button, Row, Col, Card, Spinner, Alert } from 'react-bootstrap';
 
 const Directories = () => {

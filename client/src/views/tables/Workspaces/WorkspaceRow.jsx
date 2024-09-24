@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaFolder } from 'react-icons/fa';
-import { Link, useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 import WorkspaceService from '../../../services/WorkspaceService'; // Import service
 
 const WorkspaceRow = ({ workspace, onWorkspaceDeleted }) => {

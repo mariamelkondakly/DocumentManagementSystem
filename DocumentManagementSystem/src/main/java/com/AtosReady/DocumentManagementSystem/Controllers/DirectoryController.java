@@ -31,23 +31,23 @@ public class DirectoryController {
         return service.createRootDirectory(workspace_id, name);
     }
 
-    @PostMapping("/{parent_id}")
+    @PostMapping("/{parent_id}/{dirName}")
     public ResponseEntity<HashMap<String, Object>> createSubDirectory(@PathVariable ObjectId parent_id,
-                                                                      @RequestBody DirectoryDTO dir) {
+                                                                      @PathVariable String dirName) {
 
-        return service.createSubDirectory(parent_id, dir);
+        return service.createSubDirectory(parent_id, dirName);
     }
 
     //Get Endpoints
     @GetMapping("/{parentId}")
-    public Page<DirectoryDTO> getDirectoriesInParents(@PathVariable("parentId") ObjectId parentId,
+    public List<Object> getDirectoriesInParents(@PathVariable("parentId") String parentId,
                                                       @RequestParam(value = "page", defaultValue = "0") int page,
                                                       @RequestParam(value = "size", defaultValue = "10") int size) {
         return service.getDirsByParentId(parentId, page, size);
     }
 
     @GetMapping("/root/{workspaceId}")
-    public List<Object> getDirectoriesInWorkspaces(@PathVariable("workspaceId") ObjectId workspaceId,
+    public List<Object> getDirectoriesInWorkspaces(@PathVariable("workspaceId") String workspaceId,
                                                    @RequestParam(value = "page", defaultValue = "0") int page,
                                                    @RequestParam(value = "size", defaultValue = "10") int size) {
         return service.getDirsByWorkspaceId(workspaceId, page, size);
