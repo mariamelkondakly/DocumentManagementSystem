@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
-import java.util.HashMap;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,7 +31,7 @@ public class Directories {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private Date lastAccessedAt;
     private String path;
-    private HashMap<String, Documents> documents = new HashMap<>();
+    private Set<ObjectId> documentIds=new HashSet<>();
     private boolean deleted = false;
     public Directories(){
         this.createdAt = new Date();

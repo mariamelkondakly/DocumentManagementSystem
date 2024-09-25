@@ -11,7 +11,6 @@ import org.bson.types.ObjectId;
 @Getter
 @Setter
 public class DocumentMoveRequest {
-    private ObjectId oldParentId;
     private ObjectId newParentId;
-    private String fileName;
+    private ObjectId documentId;
 }
