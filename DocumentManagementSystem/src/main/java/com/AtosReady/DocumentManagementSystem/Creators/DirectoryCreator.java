@@ -68,18 +68,13 @@ public class DirectoryCreator {
     }
 
 
-    public void moveDirectory(String oldPath, String newPath, boolean present) {
+    public void moveDirectory(String oldPath, String newPath) {
         File sourceDir = Paths.get(commonMethods.baseFolderPath, oldPath).toFile();
         File targetDir = Paths.get(commonMethods.baseFolderPath, newPath).toFile();
 
         if (!sourceDir.exists() || !sourceDir.isDirectory()) {
             throw new ResourceNotFoundException("Source directory does not exist: " + sourceDir.getAbsolutePath());
         }
-        if (targetDir.exists() && present) {
-            throw new ResourceExistsException("Target directory already exists: " + targetDir.getAbsolutePath());
-        }
-
-        commonMethods.permanentlyDeleteDirectory(present, targetDir);
 
         boolean moved = sourceDir.renameTo(targetDir);
         if (!moved) {

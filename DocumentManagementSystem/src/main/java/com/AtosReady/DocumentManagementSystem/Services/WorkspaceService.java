@@ -5,7 +5,6 @@ import com.AtosReady.DocumentManagementSystem.DTO.WorkspacesDTO;
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceExistsException;
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceNotFoundException;
 import com.AtosReady.DocumentManagementSystem.Mappers.WorkspacesMapper;
-import com.AtosReady.DocumentManagementSystem.Models.Directories;
 import com.AtosReady.DocumentManagementSystem.Models.Workspaces;
 import com.AtosReady.DocumentManagementSystem.Repositories.WorkspaceRepo;
 import org.bson.types.ObjectId;
@@ -45,16 +44,16 @@ public class WorkspaceService {
 
     //CRUD supporting methods
 
-    public ResponseEntity<HashMap<String, Object>> createNewWorkspace(long userId, String name) {
-        if (doesWorkspaceNameExist(userId, name)) {
+    public ResponseEntity<HashMap<String, Object>> createNewWorkspace(String name) {
+        if (doesWorkspaceNameExist(getUserId(), name)) {
             throw new ResourceExistsException("workspace already exists");
         }
-        Optional<Workspaces> deletedWorkspace = repo.findByUserIdAndNameAndDeletedTrue(userId, name);
+        Optional<Workspaces> deletedWorkspace = repo.findByUserIdAndNameAndDeletedTrue(getUserId(), name);
         deletedWorkspace.ifPresent(workspaces -> repo.delete(workspaces));
 
-        Workspaces newWorkspace = new Workspaces(userId, name);
+        Workspaces newWorkspace = new Workspaces(getUserId(), name);
         repo.save(newWorkspace);
-        return creator.createWorkspaceDirectory(Long.toString(userId),
+        return creator.createWorkspaceDirectory(Long.toString(getUserId()),
                 newWorkspace.getName(),
                 deletedWorkspace.isPresent());
     }

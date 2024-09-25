@@ -21,6 +21,6 @@ public class DirectoryDTO {
     private Date createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private Date lastAccessedAt;
-    private HashMap<String, Documents> documents = new HashMap<>();
+
 
 }

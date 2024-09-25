@@ -2,14 +2,9 @@ package com.AtosReady.DocumentManagementSystem.Controllers;
 
 import com.AtosReady.DocumentManagementSystem.DTO.DocumentMoveRequest;
 import com.AtosReady.DocumentManagementSystem.DTO.SearchResults;
-import com.AtosReady.DocumentManagementSystem.DTO.WorkspacesDTO;
-import com.AtosReady.DocumentManagementSystem.Models.Directories;
-import com.AtosReady.DocumentManagementSystem.Models.Documents;
 import com.AtosReady.DocumentManagementSystem.Services.DocumentService;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,16 +27,16 @@ public class DocumentController {
 
 
     @PostMapping("directories/{parentId}")
-    public ResponseEntity<String> uploadDocument(@PathVariable("parentId") ObjectId parentId,
+    public ResponseEntity<String> uploadDocument(@PathVariable("parentId") String parentId,
                                                  @RequestParam("file") MultipartFile file) throws IOException {
         return service.createDocument(parentId, file);
     }
 
-    @PutMapping("directories/rename/{parentId}/{oldName}")
-    public ResponseEntity<String> renameDocument(@PathVariable("parentId") ObjectId parentId,
+    @PutMapping("directories/rename/{documentId}/{oldName}")
+    public ResponseEntity<String> renameDocument(@PathVariable("documentId") String documentId,
                                                  @PathVariable("oldName") String oldName,
                                                  @RequestParam("newName") String newName) throws IOException {
-        return service.renameDocument(parentId, oldName, newName);
+        return service.renameDocument(documentId, oldName, newName);
     }
 
     @PutMapping("directories/move")
@@ -49,22 +44,22 @@ public class DocumentController {
         return service.moveDocument(documentMoveRequest);
     }
 
-    @DeleteMapping("directories/{parentId}/{name}")
-    public ResponseEntity<String> deleteDocument(@PathVariable("parentId") ObjectId parentId,@PathVariable("name") String name)
+    @DeleteMapping("directories/{documentId}")
+    public ResponseEntity<String> deleteDocument(@PathVariable("documentId") String documentId)
             throws IOException {
-        return service.deleteDocument(parentId,name);
+        return service.deleteDocument(documentId);
     }
 
-    @GetMapping("directories/preview/{parentId}/{documentName}")
-    public ResponseEntity<Resource> previewDocument(@PathVariable("parentId") ObjectId parentId,@PathVariable("documentName") String documentName)
+    @GetMapping("directories/preview/{documentId}")
+    public ResponseEntity<Resource> previewDocument(@PathVariable("documentId") String documentId)
             throws IOException {
-        return service.previewAndDownloadDocument(parentId,documentName,"inline");
+        return service.previewAndDownloadDocument(documentId,"inline");
     }
 
-    @GetMapping("directories/download/{parentId}/{documentName}")
-    public ResponseEntity<Resource> downloadDocument(@PathVariable("parentId") ObjectId parentId,@PathVariable("documentName") String documentName)
+    @GetMapping("directories/download/{documentId}")
+    public ResponseEntity<Resource> downloadDocument(@PathVariable("documentId") String documentId)
             throws IOException {
-        return service.previewAndDownloadDocument(parentId,documentName,"attachment");
+        return service.previewAndDownloadDocument(documentId,"attachment");
     }
 
 }

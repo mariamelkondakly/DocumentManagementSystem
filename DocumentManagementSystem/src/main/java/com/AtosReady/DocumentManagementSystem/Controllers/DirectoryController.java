@@ -1,20 +1,17 @@
 package com.AtosReady.DocumentManagementSystem.Controllers;
 
-import com.AtosReady.DocumentManagementSystem.DTO.DirectoryDTO;
 import com.AtosReady.DocumentManagementSystem.DTO.DirectoryMoveRequest;
 import com.AtosReady.DocumentManagementSystem.DTO.DirectoryRenameRequest;
 import com.AtosReady.DocumentManagementSystem.Services.DirectoriesService;
+import com.AtosReady.DocumentManagementSystem.Services.DirectoryDocumentService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/workspaces")
@@ -22,6 +19,9 @@ public class DirectoryController {
 
     @Autowired
     private DirectoriesService service;
+
+    @Autowired
+    private DirectoryDocumentService directoryDocumentService;
 
     //Post Endpoints
     @PostMapping("/root/{workspace_id}/{name}")
@@ -41,8 +41,8 @@ public class DirectoryController {
     //Get Endpoints
     @GetMapping("/{parentId}")
     public List<Object> getDirectoriesInParents(@PathVariable("parentId") String parentId,
-                                                      @RequestParam(value = "page", defaultValue = "0") int page,
-                                                      @RequestParam(value = "size", defaultValue = "10") int size) {
+                                                @RequestParam(value = "page", defaultValue = "0") int page,
+                                                @RequestParam(value = "size", defaultValue = "10") int size) {
         return service.getDirsByParentId(parentId, page, size);
     }
 
@@ -57,14 +57,14 @@ public class DirectoryController {
     @PutMapping("/move/{id}")
     public ResponseEntity<String> moveDirectory(@PathVariable("id") String id,
                                                 @RequestBody DirectoryMoveRequest updateRequest) {
-        service.MoveDirectory(id, updateRequest);
+        directoryDocumentService.MoveDirectory(id, updateRequest);
         return ResponseEntity.ok("Directory updated successfully");
     }
 
     @PutMapping("/rename/{id}")
-    public ResponseEntity<String> renameDirectory(@PathVariable("id") ObjectId id,
+    public ResponseEntity<String> renameDirectory(@PathVariable("id") String id,
                                                   @RequestBody DirectoryRenameRequest updateRequest) {
-        service.RenameDirectory(id, updateRequest);
+        directoryDocumentService.RenameDirectory(id, updateRequest);
         return ResponseEntity.ok("Directory updated successfully");
     }
 
@@ -72,13 +72,13 @@ public class DirectoryController {
     //Delete Endpoints
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteWorkspace(@PathVariable("id") String id) throws IOException {
-        service.deleteWorkspace(new ObjectId(id));
+        directoryDocumentService.deleteWorkspace(id);
         return ResponseEntity.ok("Workspace deleted successfully.");
     }
 
     @DeleteMapping("/deleteDirectory/{id}")
-    public ResponseEntity<String> deleteDirectory(@PathVariable("id") ObjectId id) throws IOException {
-        service.deleteDirectory(id);
+    public ResponseEntity<String> deleteDirectory(@PathVariable("id") String id) throws IOException {
+        directoryDocumentService.deleteDirectory(new ObjectId(id));
         return ResponseEntity.ok("Workspace deleted successfully.");
     }
 }
