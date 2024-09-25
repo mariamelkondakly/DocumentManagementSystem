@@ -1,4 +1,4 @@
 package com.AtosReady.DocumentManagementSystem.Mappers;
 
-public interface DirectoriesMapper {
+public interface DocumentsMapper {
 }
