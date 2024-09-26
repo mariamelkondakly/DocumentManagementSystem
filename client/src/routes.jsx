@@ -66,46 +66,6 @@ const routes = [
         element: lazy(() => import('./views/directories/sub/index'))
       },
       {
-        exact: 'true',
-        path: '/basic/button',
-        element: lazy(() => import('./views/ui-elements/basic/BasicButton'))
-      },
-      {
-        exact: 'true',
-        path: '/basic/badges',
-        element: lazy(() => import('./views/ui-elements/basic/BasicBadges'))
-      },
-      {
-        exact: 'true',
-        path: '/basic/breadcrumb-paging',
-        element: lazy(() => import('./views/ui-elements/basic/BasicBreadcrumb'))
-      },
-      {
-        exact: 'true',
-        path: '/basic/collapse',
-        element: lazy(() => import('./views/ui-elements/basic/BasicCollapse'))
-      },
-      {
-        exact: 'true',
-        path: '/basic/tabs-pills',
-        element: lazy(() => import('./views/ui-elements/basic/BasicTabsPills'))
-      },
-      {
-        exact: 'true',
-        path: '/basic/typography',
-        element: lazy(() => import('./views/ui-elements/basic/BasicTypography'))
-      },
-      {
-        exact: 'true',
-        path: '/forms/form-basic',
-        element: lazy(() => import('./views/forms/FormsElements'))
-      },
-      {
-        exact: 'true',
-        path: '/sample-page',
-        element: lazy(() => import('./views/extra/SamplePage'))
-      },
-      {
         path: '*',
         exact: 'true',
         element: () => <Navigate to="/login" />

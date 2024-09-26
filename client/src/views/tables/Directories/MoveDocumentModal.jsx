@@ -83,7 +83,7 @@ const MoveModal = ({ show, handleClose, workspaces, moveToDirectory }) => {
           <span onClick={() => toggleSubDirectory(dir.id)} style={{ cursor: 'pointer' }}>
             {dir.name}
           </span>
-          <Button variant="primary" size="sm" onClick={() => moveToDirectory(dir,false)}>
+          <Button variant="primary" size="sm" onClick={() => moveToDirectory(dir.id)}>
             Select
           </Button>
         </ListGroup.Item>
@@ -105,7 +105,7 @@ const MoveModal = ({ show, handleClose, workspaces, moveToDirectory }) => {
           <span onClick={() => toggleSubDirectory(dir.id)} style={{ cursor: 'pointer' }}>
             {dir.name}
           </span>
-          <Button variant="primary" size="sm" onClick={() => moveToDirectory(dir,false)}>
+          <Button variant="primary" size="sm" onClick={() => moveToDirectory(dir.id)}>
             Select
           </Button>
         </ListGroup.Item>
@@ -121,7 +121,7 @@ const MoveModal = ({ show, handleClose, workspaces, moveToDirectory }) => {
   return (
     <Modal show={show} onHide={handleClose} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>Select Workspace and Directory</Modal.Title>
+        <Modal.Title>Select a Directory</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <ListGroup>
@@ -131,9 +131,6 @@ const MoveModal = ({ show, handleClose, workspaces, moveToDirectory }) => {
                 <span onClick={() => toggleRootDirectory(workspace.id)} style={{ cursor: 'pointer' }}>
                   {workspace.name}
                 </span>
-                <Button variant="primary" size="sm" onClick={() => moveToDirectory(workspace,true)}>
-                  Select
-                </Button>
               </ListGroup.Item>
               <Collapse in={openDirectories[`workspace-${workspace.id}`]}>
                 <ListGroup className="pl-4">

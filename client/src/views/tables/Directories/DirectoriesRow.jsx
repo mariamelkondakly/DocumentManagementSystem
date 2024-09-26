@@ -5,13 +5,11 @@ import DirectoriesService from '../../../services/DirectoriesService';
 import WorkspaceService from '../../../services/WorkspaceService';
 import MoveModal from './MoveModal'; // Add the move modal component
 
-const DirectoriesRow = ({ directory, onDirectoryDeleted, onDirectoryMoved}) => {
+const DirectoriesRow = ({ directory, onDirectoryDeleted, onDirectoryMoved,isOriginalRoot}) => {
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [selectedDirectory, setSelectedDirectory] = useState(null);
   const [workspaces, setWorkspaces] = useState([]);
   const navigate = useNavigate();
-
-
 
 
   const handleDelete = async (id) => {
@@ -49,14 +47,15 @@ const DirectoriesRow = ({ directory, onDirectoryDeleted, onDirectoryMoved}) => {
     setSelectedDirectory(null); // Reset selected directory after modal is closed
   };
 
-  const handleDirectoryMoved = async (newParentDirectory) => {
+  const handleDirectoryMoved = async (newParentDirectory,isRoot) => {
+  
+
     // Call API to move the directory
-    const result = await DirectoriesService.moveDirectory(selectedDirectory.id, newParentDirectory.id,true,true);
+    const result = await DirectoriesService.moveDirectory(selectedDirectory.id, newParentDirectory.id,isRoot,isOriginalRoot);
 
     if (result==="Directory updated successfully") {
       onDirectoryMoved();
       handleCloseMoveModal();
-      alert(`Directory moved to ${newParentDirectory.name}`);
 
     } else {
       alert('Failed to move directory');
@@ -66,7 +65,7 @@ const DirectoriesRow = ({ directory, onDirectoryDeleted, onDirectoryMoved}) => {
   return (
     <>
       <tr>
-        <td>
+        <td onClick={()=>handleViewClick(directory.id)} style={{ cursor: 'pointer' }}>
           <FaFolder className="me-2" style={{ fontSize: '24px', color: "#f88379" }} />
           {directory.name}
         </td>
@@ -77,9 +76,9 @@ const DirectoriesRow = ({ directory, onDirectoryDeleted, onDirectoryMoved}) => {
           <h6 className="text-muted">{directory.lastAccessedAt}</h6>
         </td>
         <td>
-          <button onClick={()=>handleViewClick(directory.id)} className="btn btn-theme">
+          {/* <button onClick={()=>handleViewClick(directory.id)} className="btn btn-theme">
             View
-          </button>
+          </button> */}
           <button 
             className="btn btn-theme3"
             onClick={() => handleMove(directory)} // Handle move button click

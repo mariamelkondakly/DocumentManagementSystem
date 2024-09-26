@@ -31,7 +31,20 @@ const DirectoriesService={
         return { success: false, message: 'Failed to load directories' };
       }
   },
+  viewDocuments: async(parentId)=>{
+    try{
+        const token= localStorage.getItem('token');
+        const response=await apiClient.get(`/directories/${parentId}`, {headers:{
+            Authorization: `Bearer ${token}`
+        }});
+    return { success: true, data: response.data };
+    }
+     catch (error) {
+        console.error("API Error:", error); // Log the actual error
 
+      return { success: false, message: 'Failed to load documents' };
+    }
+},
     createRootDirectory: async (workspaceId, name) => {
       try {
         const token = localStorage.getItem('token');
@@ -103,6 +116,24 @@ const DirectoriesService={
         const token = localStorage.getItem('token');
         await apiClient.delete(`/deleteDirectory/${id}`, {
           headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        return { success: true };
+      } catch (err) {
+        console.error(`Failed to delete directroy with id ${id}:`, err);
+        return { success: false, message: 'Failed to delete directory' };
+      }
+    },
+    updateDirectoryName: async (id,newName) => {
+      try {
+        const token = localStorage.getItem('token');
+        await apiClient.put(`/rename/${id}`, 
+          {
+            isRoot: false,
+            name: newName
+          },
+          {headers: {
             Authorization: `Bearer ${token}`,
           },
         });

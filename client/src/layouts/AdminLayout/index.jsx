@@ -58,7 +58,7 @@ const AdminLayout = ({ children }) => {
         <div className={mainClass.join(' ')}>
           <div className="pcoded-content">
             <div className="pcoded-inner-content">
-              <NavSearch windowWidth={windowSize.width}/>
+              <NavSearch/>
               <Breadcrumb />
               {children}
             </div>

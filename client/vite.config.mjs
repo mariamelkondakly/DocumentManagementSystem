@@ -5,43 +5,29 @@ import jsconfigPaths from 'vite-jsconfig-paths';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   const API_URL = `${env.VITE_APP_BASE_NAME}`;
-  const PORT = `${'3000'}`;
+  const PORT = '3000'; // No need for template literals here
 
   return {
     server: {
-      // this ensures that the browser opens upon server start
-      open: true,
-      // this sets a default port to 3000
-      port: PORT
+      open: true,  // Automatically opens the browser on server start
+      port: PORT,  // Set the server port to 3000
     },
     define: {
-      global: 'window'
+      global: 'window', // Define global variable for the application
     },
     resolve: {
       alias: [
-        // { find: '', replacement: path.resolve(__dirname, 'src') },
-        // {
-        //   find: /^~(.+)/,
-        //   replacement: path.join(process.cwd(), 'node_modules/$1')
-        // },
-        // {
-        //   find: /^src(.+)/,
-        //   replacement: path.join(process.cwd(), 'src/$1')
-        // }
-        // {
-        //   find: 'assets',
-        //   replacement: path.join(process.cwd(), 'src/assets')
-        // },
-      ]
+        // Add any aliases here if needed
+      ],
     },
     css: {
       preprocessorOptions: {
         scss: {
-          charset: false
+          charset: false,
         },
         less: {
-          charset: false
-        }
+          charset: false,
+        },
       },
       charset: false,
       postcss: {
@@ -53,13 +39,13 @@ export default defineConfig(({ mode }) => {
                 if (atRule.name === 'charset') {
                   atRule.remove();
                 }
-              }
-            }
-          }
-        ]
-      }
+              },
+            },
+          },
+        ],
+      },
     },
-    base: API_URL,
-    plugins: [react(), jsconfigPaths()]
+    base: API_URL, // Base URL for the app
+    plugins: [react(), jsconfigPaths()], // React and JS Config paths support
   };
 });

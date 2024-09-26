@@ -63,14 +63,17 @@ public class DocumentCreator {
         Files.move(currentFile.toPath(), newDestination.toPath());
 
 
-        return ResponseEntity.ok("File successfully moved to: " + newPath);
+        return ResponseEntity.ok("File successfully moved");
     }
 
 
     public ResponseEntity<Resource> previewAndDownloadDocument(String headerType, Documents doc) throws IOException {
         String documentName=doc.getName().replace("_",".");
+        System.out.println(doc.getPath());
         Path filePath=Paths.get(commonMethods.baseFolderPath, doc.getPath().replace("_","."));
+        System.out.println("file path"+filePath);
         Resource resource= new UrlResource(filePath.toUri());
+
         if (!resource.exists()) {
             throw new ResourceNotFoundException("File not found on server: " + filePath);
         }

@@ -25,7 +25,7 @@ const WorkspaceRow = ({ workspace, onWorkspaceDeleted }) => {
 
   return (
     <tr>
-      <td>
+      <td onClick={()=>handleViewClick(workspace.id)} style={{ cursor: 'pointer' }}>
         <FaFolder className="text-c-green me-2" style={{ fontSize: '24px' }} />
         {workspace.name}
       </td>
@@ -33,12 +33,12 @@ const WorkspaceRow = ({ workspace, onWorkspaceDeleted }) => {
         <h6 className="text-muted">{workspace.createdAt}</h6>
       </td>
       <td>
-        <button 
+        {/* <button 
           className="btn btn-theme"
-          onClick={()=>handleViewClick(workspace.id)} // Call the handleViewClick function
+           // Call the handleViewClick function
         >
           View
-        </button>
+        </button> */}
         <button 
           className="btn  btn-theme2"
           onClick={() => handleDelete(workspace.id)}

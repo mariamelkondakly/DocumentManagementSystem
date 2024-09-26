@@ -238,25 +238,22 @@ a.btn-theme3 {
 .btn:not(:disabled):not(.disabled) {
   cursor: pointer;
 }
+
+
 .add-workspace-button {
-  width: 30px; /* Adjust as needed */
-  height: 40px; /* Adjust as needed */
-  font-size: 24px; /* Adjust size of plus sign */
+  width: 70px; /* Default width */
+  height: 40px; /* Adjust height as needed */
+  font-size: 13px; /* Font size for the button */
   text-align: center;
-  transition: width 0.1s;
-  background-color: #1de1c2; 
-
+  transition: width 0.3s ease; /* Smooth transition for width */
+  display: inline-flex; /* Flexbox to center content */
+  justify-content: center; /* Center the content horizontally */
+  align-items: center; /* Center the content vertically */
+  margin-right: 10px; /* Add margin to prevent overlap */
 }
 
+/* Hover effect */
 .add-workspace-button:hover {
-  width: 150px; /* Expanded width */
-  height: 40px; /* Keep height the same */
-  background-color: #1de1c2; /* Bootstrap primary color */
-  font-size: 12px; /* Adjust size of plus sign */
-
+  width: 180px; /* Expanded width when hovered */
   color: white;
-}
-
-.add-workspace-button:focus {
-  outline: none; /* Remove focus outline */
 }

@@ -9,7 +9,6 @@ const JWTLogin = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate(); 
 
-
   return (
     <Formik
       initialValues={{
@@ -31,7 +30,6 @@ const JWTLogin = () => {
           const response = await loginAPICall(loginObj, setErrorMessage);
 
           if (response) {
-            console.log('Logged in successfully:', response);
             navigate("/Home")
           }
 

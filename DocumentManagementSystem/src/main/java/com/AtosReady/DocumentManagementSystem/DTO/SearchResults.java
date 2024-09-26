@@ -13,7 +13,7 @@ import org.springframework.data.domain.Page;
 @Setter
 @Getter
 public class SearchResults {
-
+    private Page<DocumentDTO> documents;
     private Page<DirectoryDTO> directories;
     private Page<WorkspacesDTO> workspaces;
 

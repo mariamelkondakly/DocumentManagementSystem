@@ -1,14 +1,12 @@
 package com.AtosReady.DocumentManagementSystem.Services;
 
 import com.AtosReady.DocumentManagementSystem.Creators.DocumentCreator;
-import com.AtosReady.DocumentManagementSystem.DTO.DirectoryDTO;
-import com.AtosReady.DocumentManagementSystem.DTO.DocumentMoveRequest;
-import com.AtosReady.DocumentManagementSystem.DTO.SearchResults;
-import com.AtosReady.DocumentManagementSystem.DTO.WorkspacesDTO;
+import com.AtosReady.DocumentManagementSystem.DTO.*;
 import com.AtosReady.DocumentManagementSystem.Exceptions.EmptyFileException;
 import com.AtosReady.DocumentManagementSystem.Exceptions.InvalidSignatureException;
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceExistsException;
 import com.AtosReady.DocumentManagementSystem.Exceptions.ResourceNotFoundException;
+import com.AtosReady.DocumentManagementSystem.Mappers.DocumentsMapper;
 import com.AtosReady.DocumentManagementSystem.Models.Directories;
 import com.AtosReady.DocumentManagementSystem.Models.Documents;
 import com.AtosReady.DocumentManagementSystem.Models.Workspaces;
@@ -24,9 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentService {
@@ -39,6 +36,9 @@ public class DocumentService {
 
     @Autowired
     private DocumentCreator creator;
+
+    @Autowired
+    private DocumentsMapper mapper;
 
     //DOCUMENT CREATION WHEN UPLOADING
     public ResponseEntity<String> createDocument(String directoryIds, MultipartFile file) throws IOException {
@@ -74,7 +74,7 @@ public class DocumentService {
 
         Documents newDocument = new Documents();
         newDocument.setName(sanitizedFileName);
-        newDocument.setPath(parentDirectory.getPath() + "\\" + newDocument.getName());
+        newDocument.setPath(parentDirectory.getPath() + "\\" + file.getOriginalFilename());
         newDocument.setType(file.getContentType());
         newDocument.setSize(file.getSize());
         newDocument.setParentId(directoryId);
@@ -86,27 +86,29 @@ public class DocumentService {
     }
 
     //DOCUMENT RENAME
-    public ResponseEntity<String> renameDocument(String documentIds, String oldName, String newName) throws IOException {
+    public ResponseEntity<String> renameDocument(String documentIds,String newName) throws IOException {
 
         ObjectId documentId = new ObjectId(documentIds);
 
         if (newName.isEmpty()) {
             throw new InvalidSignatureException("Enter a new name for your file");
         }
-        if (oldName.equals(newName)) {
-            ResponseEntity.ok("No visible update happened, you entered the same name.");
-        }
-
         Documents document = repo.findByUserIdAndIdAndDeletedFalse(directoriesService.getUserId(), documentId)
                 .orElseThrow(() -> new ResourceNotFoundException("couldn't find file, " +
                         "exception was raised in the renameDocument method in the DocumentService class"));
 
+        String sanitizedNewName = Objects.requireNonNull(newName).replace(".", "_");
+
+        if (document.getName().equals(sanitizedNewName)) {
+            ResponseEntity.ok("No visible update happened, you entered the same name.");
+        }
+
         Directories parentDirectory = directoriesService.repo.findByIdAndUserIdAndDeletedFalse(document.getParentId(), directoriesService.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("couldn't find file's parent directory, " +
                         "exception was raised in the renameDocument method in the DocumentService class"));
+        String oldName=document.getName().replace("_",".");
 
-        String sanitizedOldName = Objects.requireNonNull(oldName).replace(".", "_");
-        String sanitizedNewName = Objects.requireNonNull(newName).replace(".", "_");
+        String sanitizedOldName = Objects.requireNonNull(document.getName()).replace(".", "_");
 
         Optional<Documents> existingDocument = repo.findByNameAndParentIdAndUserId(sanitizedNewName, directoriesService.getUserId(), document.getParentId());
         boolean deletedPresent;
@@ -127,7 +129,7 @@ public class DocumentService {
         }
         if (getFileExtension(sanitizedOldName).equals(getFileExtension(sanitizedNewName))) {
             document.setName(sanitizedNewName);
-            document.setPath(parentDirectory.getPath() + "\\" + sanitizedNewName);
+            document.setPath(parentDirectory.getPath() + "\\" + newName);
         } else {
             throw new InvalidSignatureException("Extension cannot be changed for the same file");
         }
@@ -203,6 +205,7 @@ public class DocumentService {
                         "exception was thrown in the deleteDocument method in the DocumentService class"));
 
         document.setDeleted(true);
+        repo.save(document);
         return ResponseEntity.ok("file successfully deleted");
     }
 
@@ -211,6 +214,7 @@ public class DocumentService {
         Documents document = repo.findByUserIdAndIdAndDeletedFalse(directoriesService.getUserId(), documentId)
                 .orElseThrow(() -> new ResourceNotFoundException("file not found." +
                         "exception was thrown in the previewDocument method"));
+        System.out.println(document.getName());
         document.setLastAccessedAt(new Date());
         repo.save(document);
         return creator.previewAndDownloadDocument(headerType, document);
@@ -219,22 +223,72 @@ public class DocumentService {
     public SearchResults searchDocumentsAndWorkspaces(String searchName, int pageNumber, int pageSize) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        String sanitisedName = searchName.contains(".") ? searchName.replace(".", "_") : searchName;
 
         // Search in directories
-        Page<Directories> documentResults = directoriesService.repo.findByName(directoriesService.getUserId(), sanitisedName, pageable);
+        Page<Directories> directoryResults = directoriesService.repo.findByName(directoriesService.getUserId(), searchName, pageable);
         // Search in workspaces
         Page<Workspaces> workspaceResults = directoriesService.workspaceService.repo.findByUserIdAndNameAndDeletedFalse(
                 directoriesService.getUserId(), searchName, pageable);
+        String documentName=searchName.replace(".","_");
+        Page<Documents> documentResults= repo.findByName(directoriesService.getUserId(), documentName,pageable);
 
-        Page<DirectoryDTO> documentResultsDTO = documentResults.map(directoriesService.directoriesMapper::directoryToDirectoryDTO);
+        for (Documents document:documentResults){
+            document.setName(document.getName().replace("_","."));
+        }
+
+        Page<DocumentDTO> documentResultsDTO=documentResults.map(mapper::documentsToDocumentDTO);
+        Page<DirectoryDTO> directoryResultsDTO = directoryResults.map(directoriesService.directoriesMapper::directoryToDirectoryDTO);
         Page<WorkspacesDTO> workspaceResultsDTO = workspaceResults.map(directoriesService.workspaceService.workspacesMapper::workspaceWorkspacesDTO);
 
         // Return combined results in a custom response object
-        return new SearchResults(documentResultsDTO, workspaceResultsDTO);
+        return new SearchResults(documentResultsDTO,directoryResultsDTO, workspaceResultsDTO);
+    }
+
+    public Page<DocumentDTO> getAllDocuments(String parentIds, int pageNumber, int pageSize) {
+        ObjectId parentId=new ObjectId(parentIds);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Documents> documents=repo.findAllByParentIdAndUserIdAndDeletedFalse(parentId,directoriesService.getUserId(),pageable);
+        for (Documents document:documents){
+            document.setName(document.getName().replace("_","."));
+        }
+        return documents.map(mapper::documentsToDocumentDTO);
+    }
+
+    public ResponseEntity<String> addTags(String documentIds, ArrayList<String> tags) {
+        ObjectId documentId=new ObjectId(documentIds);
+
+        Documents document= repo.findByUserIdAndIdAndDeletedFalse(directoriesService.getUserId(),documentId)
+                .orElseThrow(()->new ResourceNotFoundException("document not found"));
+
+        ArrayList<String> existingTags= document.getTags();
+        List<String> newTags = tags.stream()
+                .filter(tag -> !existingTags.contains(tag.toLowerCase()))
+                .toList();
+
+        existingTags.addAll(newTags);
+        document.setTags(existingTags);
+        repo.save(document);
+        return ResponseEntity.ok("tags added successfully");
+    }
+
+    public SearchResults searchByTags(String searchName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Documents> results=repo.findByTag(directoriesService.getUserId(), searchName,pageable);
+        for (Documents document:results){
+            document.setName(document.getName().replace("_","."));
+        }
+        return new SearchResults(results.map(mapper::documentsToDocumentDTO),null,null);
+    }
+
+    public SearchResults searchByType(String searchName, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Documents> results=repo.findByTypeIgnoreCase(directoriesService.getUserId(), searchName,pageable);
+        for (Documents document:results){
+            document.setName(document.getName().replace("_","."));
+        }
+        return new SearchResults(results.map(mapper::documentsToDocumentDTO),null,null);
     }
 
     //TODO: create a whole new function dedicated to searching documents only by name and by tag.
-    //TODO: create a function that returns a page of document dto
 
 }

@@ -353,6 +353,11 @@ p.text-muted {
  ========================================================
 
 /* Code snippets */
+.cursive-font {
+  font-family: 'Brush Script MT','Cursive', sans-serif; /* You can replace these with your desired cursive fonts */
+  font-size:xx-large; /* Adjust as needed */
+  margin-left: 10%;
+}
 
 .highlight {
   padding: 1rem;

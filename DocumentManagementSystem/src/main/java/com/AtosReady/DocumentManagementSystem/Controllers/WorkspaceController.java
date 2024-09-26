@@ -1,5 +1,6 @@
 package com.AtosReady.DocumentManagementSystem.Controllers;
 
+import com.AtosReady.DocumentManagementSystem.Configurations.JWTUtil;
 import com.AtosReady.DocumentManagementSystem.DTO.WorkspacesDTO;
 import com.AtosReady.DocumentManagementSystem.Services.WorkspaceService;
 import org.springframework.beans.factory.annotation.Autowired;

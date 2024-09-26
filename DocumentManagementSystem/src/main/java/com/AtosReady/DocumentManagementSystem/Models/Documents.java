@@ -29,7 +29,7 @@ public class Documents {
     private long size;
     private Date createdAt;
     private Date lastAccessedAt;
-    private List<String> tags=new ArrayList<>();
+    private ArrayList<String> tags=new ArrayList<>();
     private String type;
     private boolean deleted = false;
 

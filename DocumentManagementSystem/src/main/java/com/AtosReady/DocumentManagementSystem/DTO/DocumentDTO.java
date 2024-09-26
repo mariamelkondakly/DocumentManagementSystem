@@ -20,6 +20,7 @@ public class DocumentDTO {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
     private Date lastAccessedAt;
     private long size;
-    private List<String> tags = new ArrayList<>();
+    private ArrayList<String> tags = new ArrayList<>();
     private String type;
+    private String parentId;
 }
