@@ -11,10 +11,10 @@ const WorkspaceService = {
           },
         });
         let fetchedWorkspaces = response.data.content;
-  
+        const noOfElements=response.data.totalElements;
         fetchedWorkspaces.sort((a, b) => parseDate(b.createdAt) - parseDate(a.createdAt));
   
-        return { success: true, data: fetchedWorkspaces };
+        return { success: true, data: fetchedWorkspaces,noOfElements };
       } catch (err) {
         console.error('Failed to fetch workspaces:', err);
         return { success: false, message: 'Failed to fetch workspaces' };

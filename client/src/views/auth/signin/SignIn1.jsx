@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button, Alert } from 'react-bootstrap';
+import { Card, Button, Alert,CardHeader } from 'react-bootstrap';
 import { NavLink, Link } from 'react-router-dom';
 
 import Breadcrumb from '../../../layouts/AdminLayout/Breadcrumb';
@@ -22,6 +22,12 @@ const Signin1 = () => {
             <span className="r" />
           </div>
           <Card className="borderless text-center">
+          <CardHeader>
+                  <h1 className="cursive-font text-center" style={{ marginLeft: '0px', fontSize: '70px' }}>
+                    Documented
+                  </h1>
+                  <p className="text-center">Your timeless digital archive</p>
+                </CardHeader>
             <Card.Body>
               <div className="mb-4">
                 <i className="feather icon-unlock auth-icon" />

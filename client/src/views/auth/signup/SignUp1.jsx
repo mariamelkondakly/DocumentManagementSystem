@@ -1,27 +1,27 @@
 import React, { useState } from 'react';
-import { Card, Row, Col } from 'react-bootstrap';
+import { Card, Row, Col, CardHeader } from 'react-bootstrap';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import Breadcrumb from '../../../layouts/AdminLayout/Breadcrumb';
 import { registerAPICall } from '../../../services/AuthService'; // Adjust the path as needed
 
 const SignUp1 = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
     email: '',
     password: '',
     nid: '',
-    age: '',
+    age: ''
   });
-  
+
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: value
     }));
   };
 
@@ -58,14 +58,21 @@ const SignUp1 = () => {
           <Card className="borderless">
             <Row className="align-items-center">
               <Col>
+                <CardHeader>
+                  <h1 className="cursive-font text-center" style={{ marginLeft: '0px', fontSize: '70px' }}>
+                    Documented
+                  </h1>
+                  <p className="text-center">Your timeless digital archive</p>
+                </CardHeader>
                 <Card.Body className="text-center">
                   <div className="mb-4">
-                    <i className="feather icon-user-plus auth-icon" />
+                    <i className="feather icon-user-plus auth-icon " />
                   </div>
-                  <h3 className="mb-4">Sign up</h3>
                   <form onSubmit={handleSubmit}>
                     <div className="mb-3">
-                      <label htmlFor="first_name" className="form-label text-start d-block">First Name</label>
+                      <label htmlFor="first_name" className="form-label text-start d-block">
+                        First Name
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -77,7 +84,9 @@ const SignUp1 = () => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="last_name" className="form-label text-start d-block">Last Name</label>
+                      <label htmlFor="last_name" className="form-label text-start d-block">
+                        Last Name
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -89,7 +98,9 @@ const SignUp1 = () => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="email" className="form-label text-start d-block">Email Address</label>
+                      <label htmlFor="email" className="form-label text-start d-block">
+                        Email Address
+                      </label>
                       <input
                         type="email"
                         className="form-control"
@@ -101,7 +112,9 @@ const SignUp1 = () => {
                       />
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="nid" className="form-label text-start d-block">NID (14 digits)</label>
+                      <label htmlFor="nid" className="form-label text-start d-block">
+                        NID (14 digits)
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -111,21 +124,20 @@ const SignUp1 = () => {
                         onChange={handleChange}
                         required
                       />
-                      {formData.nid.length !== 14 && formData.nid && <p className="text-danger text-start d-block">NID should be exactly 14 digits.</p>}
+                      {formData.nid.length !== 14 && formData.nid && (
+                        <p className="text-danger text-start d-block">NID should be exactly 14 digits.</p>
+                      )}
                     </div>
                     <div className="mb-3">
-                      <label htmlFor="age" className="form-label text-start d-block">Age (Optional)</label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="age"
-                        name="age"
-                        value={formData.age}
-                        onChange={handleChange}
-                      />
+                      <label htmlFor="age" className="form-label text-start d-block">
+                        Age (Optional)
+                      </label>
+                      <input type="number" className="form-control" id="age" name="age" value={formData.age} onChange={handleChange} />
                     </div>
                     <div className="mb-4">
-                      <label htmlFor="password" className="form-label text-start d-block">Password</label>
+                      <label htmlFor="password" className="form-label text-start d-block">
+                        Password
+                      </label>
                       <input
                         type="password"
                         className="form-control"

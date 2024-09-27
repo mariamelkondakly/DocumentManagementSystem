@@ -1,9 +1,10 @@
 
 import axios from 'axios';
+import { data } from 'jquery';
 
 const AUTH_REST_API_BASE_URL = 'http://localhost:8080';
 
-export const registerAPICall = (registerObj) => {
+export const registerAPICall = async (registerObj) => {
     
   return axios.post(`${AUTH_REST_API_BASE_URL}/register`, registerObj)
       .then(response => {
@@ -29,16 +30,22 @@ export const registerAPICall = (registerObj) => {
       });
 };
 
-export const loginAPICall = (loginObj, setErrorMessage) => {
+export const loginAPICall = async (loginObj, setErrorMessage) => {
   return axios.post(`${AUTH_REST_API_BASE_URL}/login`, loginObj)
     .then(response => {
-      const token = response.data;
+      const token = response.data[0];
       
       // Store token in local storage
       localStorage.setItem('token', token);
+      localStorage.setItem('firstName',response.data[1].first_name);
+      localStorage.setItem('lastName',response.data[1].last_name);
+      localStorage.setItem('email',response.data[1].email);
+      localStorage.setItem('age',response.data[1].age);
+      localStorage.setItem('nid',response.data[1].nid);
 
-      console.log("Login successful");
-      return response.data;
+
+      return response.data[0];
+
     })
     .catch(error => {
       if (error.response && error.response.status === 401) {

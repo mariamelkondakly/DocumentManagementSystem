@@ -19,8 +19,6 @@ public interface WorkspaceRepo extends MongoRepository<Workspaces, ObjectId> {
 
     Optional<Workspaces> findByUserIdAndNameAndDeletedTrue(long userId, String name);
 
-    void deleteByUserIdAndNameAndDeletedTrue(long userId, String name);
-
     @Query("{ 'userId': ?0, 'name': { '$regex': ?1, '$options': 'i' }, 'deleted': false }")
     Page<Workspaces> findByUserIdAndNameAndDeletedFalse(Long userId, String name, Pageable pageable);
 }

@@ -35,4 +35,5 @@ public interface DirectoriesRepo extends MongoRepository<Directories, ObjectId> 
     @Query("{ 'userId': ?0, 'name': { '$regex': ?1, '$options': 'i' }, 'deleted': false } ")
     Page<Directories> findByName(Long userId, String searchName, Pageable pageable);
 
+    Optional<Directories> findByIdAndUserIdAndDeletedTrue(ObjectId directoryId, Long userId);
 }

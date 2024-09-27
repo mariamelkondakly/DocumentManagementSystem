@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -31,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String login(@Valid @RequestBody  LoginRequest user)
+    public List<Object> login(@Valid @RequestBody  LoginRequest user)
     {
         return userService.verify(user);
     }

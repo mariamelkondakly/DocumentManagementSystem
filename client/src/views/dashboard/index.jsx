@@ -7,11 +7,13 @@ const DashDefault = () => {
   const [workspaces, setWorkspaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [totalWorkspaces,setTotalWorkspaces]=useState(0);
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
       const result = await WorkspaceService.fetchWorkspaces();
       if (result.success) {
+        setTotalWorkspaces(result.noOfElements);
         setWorkspaces(result.data.slice(0, 5));
       } else {
         setError(result.message);
@@ -52,7 +54,7 @@ const DashDefault = () => {
                   <i className="feather icon-folder f-30 text-c-green" />
                 </div>
                 <div className="col">
-                  <h3 className="f-w-300">{workspaces.length}</h3>
+                  <h3 className="f-w-300">{totalWorkspaces}</h3>
                   <span className="d-block text-uppercase">Total Workspaces</span>
                 </div>
               </div>

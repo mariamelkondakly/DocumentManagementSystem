@@ -52,12 +52,14 @@ public class UserService {
         return folderCreator.createUserDirectory(Long.toString(user.getNid()),userMapper.userToUserDTO(user));
     }
 
-    public String verify(LoginRequest user){
+    public ArrayList<Object> verify(LoginRequest user){
         Authentication authentication=authManager.authenticate(new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword()));
         User existingUser=repo.findByEmail(user.getEmail());
         if(authentication.isAuthenticated()){
-
-            return jwtService.generateToken(user.getEmail(), existingUser.getNid(), existingUser.getFirst_name());
+            ArrayList<Object> response=new ArrayList<>();
+            response.add(jwtService.generateToken(user.getEmail(), existingUser.getNid(), existingUser.getFirst_name()));
+            response.add(userMapper.userToUserDTO(existingUser));
+            return response;
         }
         else{
             throw new UsernameNotFoundException("User doesn't exist.");

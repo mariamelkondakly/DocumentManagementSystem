@@ -66,6 +66,11 @@ const routes = [
         element: lazy(() => import('./views/directories/sub/index'))
       },
       {
+        exact: 'true', 
+        path: '/profile', 
+        element: lazy(() => import('./views/user/userPage'))
+      },
+      {
         path: '*',
         exact: 'true',
         element: () => <Navigate to="/login" />

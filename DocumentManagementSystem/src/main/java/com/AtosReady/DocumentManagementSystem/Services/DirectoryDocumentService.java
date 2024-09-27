@@ -200,6 +200,7 @@ public class DirectoryDocumentService {
     }
 
     //Deleting methods
+
     public void deleteDirectory(ObjectId directoryId) throws IOException {
         Directories directory = docService.directoriesService.repo.findByIdAndUserIdAndDeletedFalse(directoryId, docService.directoriesService.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Directory not found with ID: " + directoryId
@@ -238,6 +239,7 @@ public class DirectoryDocumentService {
 
     }
 
+
     //updating utilities
     @Transactional
     public void recursivelyUpdateSubPath(Directories existingDirectory, Directories destinationParent) {
@@ -262,5 +264,44 @@ public class DirectoryDocumentService {
                                     " Exception was thrown in recursivelyUpdatePathOfRootChildren"));
             recursivelyUpdateSubPath(child, destinationParent);
         }
+    }
+
+    //restoring methods
+    public void restoreDirectory(ObjectId directoryId) throws IOException {
+        Directories directory = docService.directoriesService.repo.findByIdAndUserIdAndDeletedTrue(directoryId, docService.directoriesService.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Directory not found with ID: " + directoryId
+                        + "exception was raised in the deleteDirectory method while extracting the directory"));
+
+        directory.setDeleted(false);
+
+        if (!directory.getDocumentIds().isEmpty()) {
+            List<Documents> documents = docService.repo.findAllByParentIdAndUserIdAndDeletedFalse(directory.getId(), docService.directoriesService.getUserId());
+            for (Documents document : documents) {
+                document.setDeleted(false);
+                docService.repo.save(document);
+            }
+        }
+
+        if (!directory.getChildrenIds().isEmpty()) {
+            for (ObjectId childId : directory.getChildrenIds()) {
+                restoreDirectory(childId);
+            }
+        }
+        docService.directoriesService.repo.save(directory);
+    }
+
+    public void restoreWorkspace(String ids) throws IOException {
+        ObjectId id=new ObjectId(ids);
+        Workspaces workspaces = docService.directoriesService.workspaceService.repo.findByIdAndDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Workspace not found. " +
+                        "Exception was raised in the deleteWorkspace method while extracting the workspace"));
+
+        workspaces.setDeleted(false);
+        docService.directoriesService.workspaceService.repo.save(workspaces);
+
+        for (ObjectId directoryId : workspaces.getDirIds()) {
+            deleteDirectory(directoryId);
+        }
+
     }
 }
