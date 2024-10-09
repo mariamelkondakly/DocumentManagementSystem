@@ -13,7 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DirectoryDocumentService {
@@ -60,7 +63,7 @@ public class DirectoryDocumentService {
 
     public void RenameDirectory(String ids, DirectoryRenameRequest renameRequest) {
         //get the directory to be updated
-        ObjectId id=new ObjectId(ids);
+        ObjectId id = new ObjectId(ids);
         Directories directory = docService.directoriesService.repo
                 .findByIdAndUserIdAndDeletedFalse(id, docService.directoriesService.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Directory not found"));
@@ -126,7 +129,8 @@ public class DirectoryDocumentService {
             sourceWorkspace.getDirIds().remove(id);
             docService.directoriesService.workspaceService.repo.save(sourceWorkspace);
 
-        } else { //movedDirectory's parent is another directory
+        }
+        else { //movedDirectory's parent is another directory
 
             Directories sourceParent = docService.directoriesService.
                     repo.findByIdAndUserIdAndDeletedFalse(movedDirectory.getParentId(), docService.directoriesService.getUserId())
@@ -225,7 +229,7 @@ public class DirectoryDocumentService {
     }
 
     public void deleteWorkspace(String ids) throws IOException {
-        ObjectId id=new ObjectId(ids);
+        ObjectId id = new ObjectId(ids);
         Workspaces workspaces = docService.directoriesService.workspaceService.repo.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Workspace not found. " +
                         "Exception was raised in the deleteWorkspace method while extracting the workspace"));
@@ -291,7 +295,7 @@ public class DirectoryDocumentService {
     }
 
     public void restoreWorkspace(String ids) throws IOException {
-        ObjectId id=new ObjectId(ids);
+        ObjectId id = new ObjectId(ids);
         Workspaces workspaces = docService.directoriesService.workspaceService.repo.findByIdAndDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Workspace not found. " +
                         "Exception was raised in the deleteWorkspace method while extracting the workspace"));
